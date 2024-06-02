@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.dao.VideoDao">
+<mapper namespace="douyin.dao.VideoDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.entity.VideoEntity" id="videoMap">
+    <resultMap type="douyin.entity.VideoEntity" id="videoMap">
         <result property="name" column="name"/>
         <result property="cover" column="cover"/>
         <result property="url" column="url"/>
@@ -14,7 +14,7 @@
     </resultMap>
 
 	<select id="selectListVO"
-		resultType="com.entity.vo.VideoVO" >
+		resultType="douyin.entity.vo.VideoVO" >
 		SELECT
 		v.*,
 		u.name AS artistName
@@ -25,26 +25,26 @@
 		ON
 		v.artist_id = u.id
 		<where>
-			1=1
+			1=1 AND
 			${ew.sqlSegment}
 		</where>
 	</select>
 	
 	<select id="selectVO"
-		resultType="com.entity.vo.VideoVO" >
+		resultType="douyin.entity.vo.VideoVO" >
 		SELECT  video.* FROM video  video 	
  		<where> 1=1 ${ew.sqlSegment}</where>
 	</select>
 
     <select id="selectListView"
-		resultType="com.entity.view.VideoView" >
+		resultType="douyin.entity.view.VideoView" >
 
 		SELECT  video.* FROM video  video 	        
         <where> 1=1 ${ew.sqlSegment}</where>
 	</select>
 	
 	<select id="selectView"
-		resultType="com.entity.view.VideoView" >
+		resultType="douyin.entity.view.VideoView" >
 		SELECT * FROM video  video <where> 1=1 ${ew.sqlSegment}</where>
 	</select>
 	
