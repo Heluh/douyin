@@ -15,20 +15,19 @@
 
 	<select id="selectListVO"
 		resultType="douyin.entity.vo.UserVO" >
-		SELECT * FROM users  users         
+		SELECT * FROM users  users
         <where> 1=1 ${ew.sqlSegment}</where>
 	</select>
 	
 	<select id="selectVO"
 		resultType="douyin.entity.vo.UserVO" >
-		SELECT  users.* FROM users  users 	
+		SELECT  users.* FROM users  users
  		<where> 1=1 ${ew.sqlSegment}</where>
 	</select>
 
     <select id="selectListView"
 		resultType="douyin.entity.view.UserView" >
-
-		SELECT  users.* FROM users  users 	        
+		SELECT  users.* FROM users  users
         <where> 1=1 ${ew.sqlSegment}</where>
 	</select>
 	
