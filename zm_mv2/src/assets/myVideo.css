@@ -1,0 +1,17 @@
+.vjs-custom-skin > .video-js .vjs-big-play-button{
+    line-height: 1.95em !important;
+    border-radius:50% ;
+    width: 2em;
+    margin-left: -1em;
+   }
+  .video-player{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+  .rotate{
+    transform:rotate(90deg);
+  }
