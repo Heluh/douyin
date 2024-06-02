@@ -10,11 +10,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import douyin.utils.RedisUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.http.HttpStatus;
 
 import douyin.annotation.IgnoreAuth;
@@ -24,6 +24,7 @@ import douyin.utils.R;
  * 权限(Token)验证
  */
 @Component
+@Slf4j
 public class AuthorizationInterceptor implements HandlerInterceptor {
 
     public static final String LOGIN_TOKEN_KEY = "Authorization";
@@ -72,7 +73,6 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
 
                 // 判断redis中userId对应的token是否和传入的token一致
                 if(!redisUtil.get(token).equals(userId)) {
-                    System.out.println("token失效，请重新登录");
                     response.setStatus(HttpStatus.UNAUTHORIZED.value());
                     response.setContentType("application/json;charset=utf-8");
                     PrintWriter writer = response.getWriter();
@@ -82,9 +82,13 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                 }
                 return true;
             }catch (Exception e) {
-                System.out.println(e.getMessage());
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                throw new EIException("token验证失败", 401);
+                log.error("token验证失败");
+                response.setContentType("application/json;charset=utf-8");
+                PrintWriter writer = response.getWriter();
+                writer.write(JSONObject.toJSONString(R.error(HttpStatus.UNAUTHORIZED.value(), "token失效，请重新登录")));
+                writer.close();
+                return false;
             }
         }
 
