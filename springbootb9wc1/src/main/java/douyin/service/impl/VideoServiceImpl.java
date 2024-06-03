@@ -31,7 +31,6 @@ public class VideoServiceImpl extends ServiceImpl<VideoDao, VideoEntity> impleme
 
 	@Override
 	public PageUtils queryPage(Map<String, Object> params, Wrapper<VideoEntity> wrapper) {
-		System.out.println(wrapper);
 		Page<VideoVO> page = new Page<>(Long.parseLong(params.get("page").toString()), Long.parseLong(params.get("limit").toString()));
 		List<VideoVO> records = baseMapper.selectListVO(page, wrapper);
 		page.setRecords(records);

@@ -45,19 +45,21 @@ public class MPUtil {
 	}
 
 	public static Wrapper genLikeOrEq(Wrapper wrapper, Map<String, Object> param) {
-		QueryWrapper queryWrapper = (QueryWrapper) wrapper; // 创建一个新的 QueryWrapper
-		int i = 0;
+		QueryWrapper<Object> queryWrapper;
+		if (wrapper instanceof QueryWrapper) {
+			queryWrapper = (QueryWrapper<Object>) wrapper;
+		} else {
+			queryWrapper = new QueryWrapper<>();
+		}
+
 		for (Map.Entry<String, Object> entry : param.entrySet()) {
-			if (i > 0)
-				queryWrapper.or();
 			String key = entry.getKey();
 			Object value = entry.getValue();
 			if (value.toString().contains("%")) {
-				queryWrapper.like(key, value.toString().replace("%", ""));
+				queryWrapper.and(query -> query.like(StringUtils.isNotBlank((CharSequence) value), key, value));
 			} else {
-				queryWrapper.eq(key, value);
+				queryWrapper.and(query -> query.eq(key, value));
 			}
-			i++;
 		}
 		return queryWrapper;
 	}

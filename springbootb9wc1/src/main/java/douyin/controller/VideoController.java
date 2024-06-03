@@ -36,7 +36,7 @@ public class VideoController {
     private StoreupService storeupService;
 
     /**
-     * 分页查询列表
+     * 分页查询视频列表，按照点赞数排序
      */
     @IgnoreAuth
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -45,9 +45,11 @@ public class VideoController {
                   @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date releaseStart,
                   @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date releaseEnd){
         QueryWrapper<VideoEntity> wrapper = new QueryWrapper<>();
-        if(releaseStart != null) wrapper.ge("releaseDate", releaseStart);
-        if(releaseEnd != null) wrapper.le("releaseDate", releaseEnd);
+        if(releaseStart != null) wrapper.ge("release_date", releaseStart);
+        if(releaseEnd != null) wrapper.le("release_date", releaseEnd);
 
+        params.put("order", "desc");
+        params.put("sort", "like_count");
         PageUtils page = videoService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(wrapper, video), params), params));
         return R.ok().put("data", page);
     }
@@ -60,7 +62,7 @@ public class VideoController {
     public R mylist(@LoginUser UserEntity user, @RequestParam Map<String, Object> params, VideoEntity video){
         QueryWrapper<VideoEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("artist_id", user.getId());
-        PageUtils page = videoService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(wrapper, video), params), params));
+        PageUtils page = videoService.queryPage(params, wrapper);
         return R.ok().put("data", page);
     }
 
@@ -120,48 +122,6 @@ public class VideoController {
     }
 
 
-
-    /**
-     * 提醒接口
-     */
-    @RequestMapping("/remind/{columnName}/{type}")
-    public R remindCount(@PathVariable("columnName") String columnName, HttpServletRequest request,
-                         @PathVariable("type") String type,@RequestParam Map<String, Object> map) {
-        map.put("column", columnName);
-        map.put("type", type);
-
-        if(type.equals("2")) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Calendar c = Calendar.getInstance();
-            Date remindStartDate = null;
-            Date remindEndDate = null;
-            if(map.get("remindstart")!=null) {
-                Integer remindStart = Integer.parseInt(map.get("remindstart").toString());
-                c.setTime(new Date());
-                c.add(Calendar.DAY_OF_MONTH,remindStart);
-                remindStartDate = c.getTime();
-                map.put("remindstart", sdf.format(remindStartDate));
-            }
-            if(map.get("remindend")!=null) {
-                Integer remindEnd = Integer.parseInt(map.get("remindend").toString());
-                c.setTime(new Date());
-                c.add(Calendar.DAY_OF_MONTH,remindEnd);
-                remindEndDate = c.getTime();
-                map.put("remindend", sdf.format(remindEndDate));
-            }
-        }
-
-        QueryWrapper<VideoEntity> wrapper = new QueryWrapper<>();
-        if(map.get("remindstart")!=null) {
-            wrapper.ge(columnName, map.get("remindstart"));
-        }
-        if(map.get("remindend")!=null) {
-            wrapper.le(columnName, map.get("remindend"));
-        }
-
-        long count = videoService.count(wrapper);
-        return R.ok().put("count", count);
-    }
 
     /**
      * 前端智能排序
