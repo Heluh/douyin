@@ -6,8 +6,8 @@ server:
 spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/springbootb9wc1?useSSL=false&useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
-    username: root
+    url: jdbc:mysql://60.205.233.141/springbootb9wc1?useSSL=false&useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
+    username: Lzq12345
     password: 12345678
   servlet:
     multipart:
@@ -21,7 +21,7 @@ spring:
     redis:
       host: 60.205.233.141
       port: 6379
-      password: 123456
+      password: Lzq12345
       database: 0
       timeout: 10000
       lettuce:
