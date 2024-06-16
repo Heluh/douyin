@@ -1,5 +1,6 @@
-package douyin.annotation;
+package douyin.annotation.resolver;
 
+import douyin.annotation.LoginUser;
 import douyin.entity.UserEntity;
 import douyin.utils.JwtUtil;
 import io.jsonwebtoken.Claims;

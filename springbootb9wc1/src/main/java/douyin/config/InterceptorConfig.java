@@ -1,6 +1,6 @@
 package douyin.config;
 
-import douyin.annotation.LoginUserHandlerMethodArgumentResolver;
+import douyin.annotation.resolver.LoginUserHandlerMethodArgumentResolver;
 import douyin.interceptor.AuthorizationInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

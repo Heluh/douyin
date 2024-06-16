@@ -82,6 +82,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
                 }
                 return true;
             }catch (Exception e) {
+                System.out.println(e.getMessage());
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 log.error("token验证失败");
                 response.setContentType("application/json;charset=utf-8");
