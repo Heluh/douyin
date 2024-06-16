@@ -20,7 +20,7 @@ import org.apache.commons.beanutils.BeanUtils;
  * 数据库通用操作实体类（普通增删改查）
  * @author 
  * @email 
- * @date 2022-07-27 21:34:38
+ * @date 2024-06-5 18:34:38
  */
 @TableName("videos")
 @Getter

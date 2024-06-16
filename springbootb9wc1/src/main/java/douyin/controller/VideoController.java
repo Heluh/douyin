@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import douyin.annotation.IgnoreAuth;
 import douyin.annotation.LoginUser;
 import douyin.entity.UserEntity;
+import douyin.service.VideoLikeService;
 import douyin.utils.PageUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class VideoController {
 
     @Autowired
     private StoreupService storeupService;
+
+    @Autowired
+    private VideoLikeService videoLikeService;
 
     /**
      * 分页查询视频列表，按照点赞数排序
@@ -112,15 +116,11 @@ public class VideoController {
     /**
      * 点赞
      */
-    @IgnoreAuth
     @RequestMapping(value = "/like/{id}", method = RequestMethod.POST)
-    public R like(@PathVariable("id") Long id){
-        VideoEntity video = videoService.getById(id);
-        video.setLikeCount(video.getLikeCount() + 1);
-        videoService.updateById(video);
+    public R like(@LoginUser UserEntity user, @PathVariable("id") Long videoId){
+        videoLikeService.likeOrUnlikeVideo(videoId, user.getId());
         return R.ok();
     }
-
 
 
     /**
