@@ -1,6 +1,5 @@
 package douyin.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,7 +10,6 @@ import douyin.service.VideoLikeService;
 import douyin.utils.PageUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -71,6 +69,25 @@ public class VideoController {
     }
 
     /**
+     * 点赞
+     */
+    @RequestMapping(value = "/like/{id}", method = RequestMethod.POST)
+    public R like(@LoginUser UserEntity user, @PathVariable("id") Long videoId){
+        videoLikeService.likeOrUnlikeVideo(videoId, user.getId());
+        return R.ok();
+    }
+
+    /**
+     * 查询用户是否点赞视频
+     */
+    @RequestMapping(value = "/islike/{id}", method = RequestMethod.GET)
+    public R isLike(@LoginUser UserEntity user, @PathVariable("id") Long videoId){
+        boolean isLike = videoLikeService.isLike(videoId, user.getId());
+        return R.ok().put("data", isLike);
+    }
+
+
+    /**
      * 列表
      */
     @RequestMapping("/lists")
@@ -110,15 +127,6 @@ public class VideoController {
     public R add(@RequestBody VideoEntity video, HttpServletRequest request){
         video.setId(new Date().getTime() + Math.round(Math.random() * 1000));
         videoService.save(video);
-        return R.ok();
-    }
-
-    /**
-     * 点赞
-     */
-    @RequestMapping(value = "/like/{id}", method = RequestMethod.POST)
-    public R like(@LoginUser UserEntity user, @PathVariable("id") Long videoId){
-        videoLikeService.likeOrUnlikeVideo(videoId, user.getId());
         return R.ok();
     }
 
