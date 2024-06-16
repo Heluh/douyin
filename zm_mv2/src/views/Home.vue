@@ -36,22 +36,32 @@
         </div>
       </van-swipe-item>
     </van-swipe>
-    <van-action-sheet v-model="show" class="sheet">
-      <van-list
-          v-model="loading"
-          @load="onLoad"
-          :offset="1"
-          :immediate-check="false"
-      >
-        <div v-for="(item, index) in plist" :key="index" class="ovf pll">
-          <div class="pl-l"><img :src="item.user.avatarUrl" alt="" /></div>
-          <div class="pl-r">
-            <div class="name1">{{ item.user.nickname }}</div>
-            <div class="con">{{ item.content }}</div>
-          </div>
-        </div>
-      </van-list>
-    </van-action-sheet>
+<!--    <van-action-sheet v-model="show" class="sheet">-->
+<!--      <van-list-->
+<!--          v-model="loading"-->
+<!--          @load="onLoad"-->
+<!--          :offset="1"-->
+<!--          :immediate-check="false"-->
+<!--      >-->
+<!--        <div v-for="(item, index) in plist" :key="index" class="ovf pll">-->
+<!--          <div class="pl-l"><img :src="item.user.avatarUrl" alt="" /></div>-->
+<!--          <div class="pl-r">-->
+<!--            <div class="name1">{{ item.user.nickname }}</div>-->
+<!--            <div class="con">{{ item.content }}</div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </van-list>-->
+<!--    </van-action-sheet>-->
+    <!-- 自定义图标 -->
+    <van-popup
+        v-model="show"
+        closeable
+        close-icon="close"
+        position="bottom"
+        :style="{ height: '100%' }"
+    >
+      <login/>
+    </van-popup>
   </div>
 </template>
 
@@ -59,9 +69,16 @@
 import {like, list, pl} from "@request/api";
 import "../video/index";
 import { videoPlayer } from "vue-video-player";
+import {Popup} from "vant";
+import Login from "@components/Login.vue";
 import router from '../router'; // Import the router
 
 export default {
+  components: {
+    vanPopup: Popup,
+    videoPlayer,
+    Login
+  },
   name: "home",
   data() {
     return {
@@ -94,9 +111,6 @@ export default {
         },
       },
     };
-  },
-  components: {
-    videoPlayer,
   },
   mounted() {
     this.fetchVideos();
@@ -163,7 +177,7 @@ export default {
     //打开评论
     openPl(videoId) {
       this.show = true;
-      this.loadComments(videoId);
+      // this.loadComments(videoId);
     },
     async loadComments(videoId) {
       try {
@@ -190,7 +204,6 @@ export default {
         this.visibleVideos = [];
         this.fetchVideos();
       } else if (tab === 'my') {
-        // Navigate to my page
         router.push('/my-videos');
       }
     },

@@ -11,8 +11,8 @@ const routes = [
   {
     path: '/my-videos',
     name: 'MyVideo',
-    component: () => import('@/views/MyVideo.vue')
-  }
+    component: () => import('@/views/MyVideo.vue'),
+  },
 ]
 
 const router = new VueRouter({
