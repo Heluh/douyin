@@ -6,9 +6,9 @@ server:
 spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://60.205.233.141/springbootb9wc1?useSSL=false&useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&autoReconnect=true&failOverReadOnly=false
-    username: springbootb9wc1
-    password: Lzq12345
+    url: jdbc:mysql://60.205.233.141/fake_tiktok?useSSL=false&useUnicode=true&characterEncoding=utf-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8&autoReconnect=true&failOverReadOnly=false
+    username: root
+    password: L@z@q1065
     hikari:
       max-lifetime: 1800000
   servlet:
