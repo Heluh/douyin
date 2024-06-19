@@ -33,17 +33,6 @@ public class CommentController {
     private CommentService commentService;
 
     /**
-     * 后端列表
-     */
-    @RequestMapping("/page")
-    public R page(@RequestParam Map<String, Object> params, CommentEntity comment,
-                  HttpServletRequest request) {
-        QueryWrapper<CommentEntity> qw = new QueryWrapper<>();
-        PageUtils page = commentService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(qw, comment), params), params));
-        return R.ok().put("data", page);
-    }
-
-    /**
      * 前端列表
      */
     @IgnoreAuth
@@ -77,16 +66,7 @@ public class CommentController {
     }
 
     /**
-     * 后端详情
-     */
-    @RequestMapping("/info/{id}")
-    public R info(@PathVariable("id") Long id) {
-        CommentEntity comment = commentService.getById(id);
-        return R.ok().put("data", comment);
-    }
-
-    /**
-     * 前端详情
+     * 详情
      */
     @IgnoreAuth
     @RequestMapping("/detail/{id}")
@@ -95,18 +75,9 @@ public class CommentController {
         return R.ok().put("data", comment);
     }
 
-    /**
-     * 后端保存
-     */
-    @RequestMapping("/save")
-    public R save(@RequestBody CommentEntity comment, HttpServletRequest request) {
-        comment.setId(System.currentTimeMillis() + (long) (Math.random() * 1000));
-        commentService.save(comment);
-        return R.ok();
-    }
 
     /**
-     * 前端保存
+     * 保存
      */
     @RequestMapping("/add")
     public R add(@RequestBody CommentEntity comment, HttpServletRequest request) {

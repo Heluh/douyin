@@ -33,22 +33,6 @@ public class StoreupController {
 
 
     /**
-     * 后端列表
-     */
-    @RequestMapping("/page")
-    public R page(@RequestParam Map<String, Object> params, StoreupEntity storeup,
-                  HttpServletRequest request){
-        if (!"管理员".equals(request.getSession().getAttribute("role"))) {
-            storeup.setUserid((Long) request.getSession().getAttribute("userId"));
-        }
-
-        QueryWrapper<StoreupEntity> wrapper = new QueryWrapper<>(storeup);
-        PageUtils page = storeupService.queryPage(params, wrapper);
-
-        return R.ok().put("data", page);
-    }
-
-    /**
      * 前端列表
      */
     @RequestMapping("/list")
@@ -83,14 +67,6 @@ public class StoreupController {
         return R.ok("查询收藏表成功").put("data", storeupView);
     }
 
-    /**
-     * 后端详情
-     */
-    @RequestMapping("/info/{id}")
-    public R info(@PathVariable("id") Long id){
-        StoreupEntity storeup = storeupService.getById(id);
-        return R.ok().put("data", storeup);
-    }
 
     /**
      * 前端详情
@@ -100,21 +76,6 @@ public class StoreupController {
         StoreupEntity storeup = storeupService.getById(id);
         return R.ok().put("data", storeup);
     }
-
-    /**
-     * 后端保存
-     */
-    @RequestMapping("/save")
-    public R save(@RequestBody StoreupEntity storeup, HttpServletRequest request){
-        storeup.setId(new Date().getTime() + (long) (Math.random() * 1000));
-        ValidatorUtils.validateEntity(storeup);
-        if (!"管理员".equals(request.getSession().getAttribute("role"))) {
-            storeup.setUserid((Long) request.getSession().getAttribute("userId"));
-        }
-        storeupService.save(storeup);
-        return R.ok();
-    }
-
     /**
      * 前端保存
      */
