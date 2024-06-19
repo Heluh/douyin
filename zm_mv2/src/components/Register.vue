@@ -1,5 +1,6 @@
 <template>
   <div class="register">
+    <van-icon name="cross" class="close-icon" @click="closeRegister" />
     <p class="title">注册</p>
     <van-image
         round
@@ -47,9 +48,7 @@
       <div style="margin: 16px;">
         <van-button round block type="info" native-type="submit">注册</van-button>
       </div>
-      <div class="login">
-        <div @click="toLogin">已有账号？立即登录</div>
-      </div>
+      <div class="login" @click="closeRegister">已有账号？立即登录</div>
     </van-form>
   </div>
 </template>
@@ -90,7 +89,7 @@ export default {
 
         if (response.code === 0) {
           Toast.success('注册成功');
-          this.toLogin();
+          this.closeRegister();
         } else {
           Toast.fail(response.message || '注册失败');
         }
@@ -99,8 +98,8 @@ export default {
         console.error(error);
       }
     },
-    toLogin() {
-      this.$router.push('/');
+    closeRegister() {
+      this.$emit('close'); // 触发父组件的 close 事件，关闭注册组件
     }
   }
 }
@@ -113,6 +112,7 @@ export default {
   align-items: center;
   justify-content: center;
   height: 100vh;
+  width: 100%;
   background-color: #f5f5f5;
 }
 
@@ -128,6 +128,15 @@ export default {
 .login {
   margin-top: 16px;
   color: #20a0ff;
+  cursor: pointer;
+}
+
+.close-icon {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  color: #c8c9cc;
+  font-size: 22px;
   cursor: pointer;
 }
 </style>

@@ -39,11 +39,12 @@
     <van-popup
         v-model="showPopup"
         closeable
-        close-icon="close"
+        close-icon="cross"
+        close-icon-position="top-left"
         position="bottom"
-        :style="{ height: '100%' }"
+        class="login_popup"
     >
-      <component :is="popupComponent" />
+      <Login/>
     </van-popup>
   </div>
 </template>
@@ -95,7 +96,6 @@ export default {
           fullscreenToggle: false,
         },
       },
-      popupComponent: 'Login'
     };
   },
   mounted() {
@@ -193,14 +193,6 @@ export default {
         router.push('/my-videos');
       }
     },
-    showLogin() {
-      this.popupComponent = 'Login';
-      this.showPopup = true;
-    },
-    showRegister() {
-      this.popupComponent = 'Register';
-      this.showPopup = true;
-    }
   }
 };
 </script>
@@ -218,7 +210,7 @@ export default {
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 10002;
+  z-index: 999;
 }
 .nav-button {
   background: transparent;
@@ -241,6 +233,11 @@ export default {
   white-space: nowrap;
   font-size: 17px;
 }
+
+.login_popup{
+  height: 100%;
+}
+
 .foot {
   position: absolute;
   top: 80%;
@@ -317,5 +314,7 @@ export default {
     }
   }
 }
+
+
 </style>
 

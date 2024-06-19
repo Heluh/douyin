@@ -26,19 +26,29 @@
       <div style="margin: 16px;">
         <van-button round block type="info" native-type="submit" @click="onSubmit">登录</van-button>
       </div>
-      <div class="reg">
-        <div @click="toRegister">没有账号？立即注册</div>
-      </div>
+      <div class="reg" @click="showRegister = true">没有账号？立即注册</div>
     </van-form>
+
+    <!-- 注册组件 -->
+    <transition name="slide-up">
+      <div v-if="showRegister" class="register-overlay">
+        <div class="register-container">
+          <Register @close="showRegister = false"></Register>
+        </div>
+      </div>
+    </transition>
+
   </div>
 </template>
 
 <script>
 import { Toast } from 'vant';
 import {Field, Form, Button, Image} from "vant";
+import Register from "@components/Register.vue";
 
 export default {
   components: {
+    Register,
     [Field.name]: Field,
     [Form.name]: Form,
     [Button.name]: Button,
@@ -49,6 +59,7 @@ export default {
     return {
       username: '',
       password: '',
+      showRegister: false,
     };
   },
   methods: {
@@ -64,8 +75,8 @@ export default {
         Toast.fail('账号或密码错误');
       }
     },
-    toRegister(){
-      this.$router.push('/Register')
+    closeRegister() {
+      this.showRegister = false;
     }
   }
 }
@@ -83,6 +94,30 @@ export default {
 
 }
 
+.reg{
+  color: #20a0ff;
+  cursor: pointer;
+}
+
+.register-overlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.register-container {
+  background-color: white;
+  border-radius: 10px 10px 0 0; /* 圆角顶部 */
+  width: 100%;
+  box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.2); /* 阴影效果 */
+}
+
 .title {
   /* border-radius: 15px; */
   size:1px;
@@ -91,6 +126,16 @@ export default {
   background-color: #20a0ff;
   color: #fff;
   text-align: center;
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: transform 0.3s ease-out;
+}
+
+.slide-up-enter,
+.slide-up-leave-to {
+  transform: translateX(100%);
 }
 
 </style>
