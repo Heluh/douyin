@@ -207,4 +207,15 @@ public class VideoController {
         page.setRecords(videoList);
         return R.ok().put("data", page);
     }
+
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    public R delete(@LoginUser UserEntity user, @PathVariable("id") Long videoId) {
+        VideoEntity video = videoService.getById(videoId);
+        if (video == null || !video.getArtistId().equals(user.getId())) {
+            return R.error("没有权限删除该视频");
+        }
+        videoService.removeById(videoId);
+        return R.ok();
+    }
+
 }
