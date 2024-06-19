@@ -36,31 +36,14 @@
         </div>
       </van-swipe-item>
     </van-swipe>
-<!--    <van-action-sheet v-model="show" class="sheet">-->
-<!--      <van-list-->
-<!--          v-model="loading"-->
-<!--          @load="onLoad"-->
-<!--          :offset="1"-->
-<!--          :immediate-check="false"-->
-<!--      >-->
-<!--        <div v-for="(item, index) in plist" :key="index" class="ovf pll">-->
-<!--          <div class="pl-l"><img :src="item.user.avatarUrl" alt="" /></div>-->
-<!--          <div class="pl-r">-->
-<!--            <div class="name1">{{ item.user.nickname }}</div>-->
-<!--            <div class="con">{{ item.content }}</div>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </van-list>-->
-<!--    </van-action-sheet>-->
-    <!-- 自定义图标 -->
     <van-popup
-        v-model="show"
+        v-model="showPopup"
         closeable
         close-icon="close"
         position="bottom"
         :style="{ height: '100%' }"
     >
-      <login/>
+      <component :is="popupComponent" />
     </van-popup>
   </div>
 </template>
@@ -71,13 +54,15 @@ import "../video/index";
 import { videoPlayer } from "vue-video-player";
 import {Popup} from "vant";
 import Login from "@components/Login.vue";
+import Register from "@components/Register.vue";
 import router from '../router'; // Import the router
 
 export default {
   components: {
     vanPopup: Popup,
     videoPlayer,
-    Login
+    Login,
+    Register
   },
   name: "home",
   data() {
@@ -86,7 +71,7 @@ export default {
       visibleVideos: [], // 储存五条要加载的视频
       currentIndex: 0, // 当前浏览的视频索引
       start: 0, // 当前加载的视频的起始索引
-      show: false,
+      showPopup: false,
       plist: [],
       loading: false,
       page: 1,
@@ -110,6 +95,7 @@ export default {
           fullscreenToggle: false,
         },
       },
+      popupComponent: 'Login'
     };
   },
   mounted() {
@@ -176,7 +162,7 @@ export default {
 
     //打开评论
     openPl(videoId) {
-      this.show = true;
+      this.showPopup = true;
       // this.loadComments(videoId);
     },
     async loadComments(videoId) {
@@ -207,7 +193,15 @@ export default {
         router.push('/my-videos');
       }
     },
-  },
+    showLogin() {
+      this.popupComponent = 'Login';
+      this.showPopup = true;
+    },
+    showRegister() {
+      this.popupComponent = 'Register';
+      this.showPopup = true;
+    }
+  }
 };
 </script>
 
@@ -324,3 +318,4 @@ export default {
   }
 }
 </style>
+

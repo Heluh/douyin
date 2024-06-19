@@ -13,6 +13,11 @@ const routes = [
     name: 'MyVideo',
     component: () => import('@/views/MyVideo.vue'),
   },
+  {
+    path: '/Register',
+    name: 'Register',
+    component: () => import('@/components/Register.vue')
+  }
 ]
 
 const router = new VueRouter({
