@@ -21,6 +21,7 @@
               ref="videoPlayer"
               :playsinline="true"
               :options="playerOptions"
+              @click.native="pauseVideo"
           ></video-player>
           <div class="foot">
             <p class="user">@ {{ video.artistName }}</p>
@@ -56,7 +57,7 @@ import { videoPlayer } from "vue-video-player";
 import {Popup} from "vant";
 import Login from "@components/Login.vue";
 import Register from "@components/Register.vue";
-import router from '../router'; // Import the router
+import router from '../router';
 
 export default {
   components: {
@@ -79,9 +80,10 @@ export default {
       page: 1,
       initialSwipe: 0,
       playerOptions: {
+        playbackRates: [0.5, 1.0, 1.5, 2.0], // 可选的播放速度
         autoplay: true,
         muted: false,
-        loop: false,
+        loop: true,
         preload: "auto",
         language: "zh-CN",
         poster: "",
@@ -102,6 +104,12 @@ export default {
   mounted() {
     this.fetchVideos();
   },
+  computed: {
+    player() {
+      return this.$refs.videoPlayer.player;
+    },
+  },
+
   methods: {
     async fetchVideos() {
       try {
@@ -146,6 +154,10 @@ export default {
       }
 
       this.updateVisibleVideos();
+    },
+
+    pauseVideo() {
+      this.player.pause();
     },
 
     //点赞
