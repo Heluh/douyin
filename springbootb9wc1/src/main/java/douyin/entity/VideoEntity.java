@@ -80,14 +80,7 @@ public class VideoEntity<T> implements Serializable {
 	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd")
 	@DateTimeFormat 		
 	private Date releaseDate;
-	
-	/**
-	 * 最近点击时间
-	 */
-				
-	@JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
-	@DateTimeFormat 		
-	private Date clickTime;
+
 
 	/**
 	 * 作者id

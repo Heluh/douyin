@@ -8,6 +8,8 @@ import douyin.annotation.IgnoreAuth;
 import douyin.annotation.Limit;
 import douyin.annotation.LoginUser;
 import douyin.entity.UserEntity;
+import douyin.entity.UserVideoEntity;
+import douyin.service.UserVideoService;
 import douyin.service.VideoLikeService;
 import douyin.utils.PageUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,11 +41,14 @@ public class VideoController {
     @Autowired
     private VideoLikeService videoLikeService;
 
+    @Autowired
+    private UserVideoService userVideoService;
+
     /**
      * 分页查询视频列表，按照点赞数排序
      */
     @IgnoreAuth
-    @Limit(key="videoinfo:list", permitsPerSecond=5, timeout=500, timeunit = TimeUnit.MILLISECONDS, msg="接口限流，请稍后再试")
+    @Limit(key="videoinfo:list", permitsPerSecond=5, timeout=500, msg="接口限流，请稍后再试")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public R list(@RequestParam Map<String, Object> params,
                   VideoEntity video,
@@ -74,9 +79,23 @@ public class VideoController {
     /**
      * 点赞
      */
+    @Limit(key="videoinfo:like", permitsPerSecond=5, timeout=500, msg="接口限流，请稍后再试")
     @RequestMapping(value = "/like/{id}", method = RequestMethod.POST)
     public R like(@LoginUser UserEntity user, @PathVariable("id") Long videoId){
         videoLikeService.likeOrUnlikeVideo(videoId, user.getId());
+        return R.ok();
+    }
+
+    /**
+     * 用户浏览视频
+     */
+    @RequestMapping(value = "/click/{id}", method = RequestMethod.POST)
+    public R click(@PathVariable("id") Long videoId, @LoginUser UserEntity user){
+        UserVideoEntity userVideoEntity = new UserVideoEntity();
+        userVideoEntity.setVideoId(videoId);
+        userVideoEntity.setUserId(user.getId());
+        userVideoEntity.setWatchTime(new Date());
+        userVideoService.addWatchRecord(userVideoEntity);
         return R.ok();
     }
 
@@ -111,20 +130,9 @@ public class VideoController {
         return R.ok("查询视频信息成功").put("data", videoView);
     }
 
-    /**
-     * 前端详情
-     */
-    @IgnoreAuth
-    @RequestMapping("/detail/{id}")
-    public R detail(@PathVariable("id") Long id){
-        VideoEntity video = videoService.getById(id);
-        video.setClickTime(new Date());
-        videoService.updateById(video);
-        return R.ok().put("data", video);
-    }
 
     /**
-     * 前端保存
+     * 保存
      */
     @RequestMapping("/add")
     public R add(@RequestBody VideoEntity video, HttpServletRequest request){
