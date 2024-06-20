@@ -63,6 +63,7 @@ export default {
     vanPopup: Popup,
     videoPlayer,
     Login,
+    // eslint-disable-next-line vue/no-unused-components
     Register
   },
   name: "home",
