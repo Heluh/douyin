@@ -1,9 +1,11 @@
 package douyin.controller;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 
 import douyin.annotation.IgnoreAuth;
+import douyin.annotation.Limit;
 import douyin.annotation.LoginUser;
 import douyin.entity.UserEntity;
 import douyin.service.VideoLikeService;
@@ -41,6 +43,7 @@ public class VideoController {
      * 分页查询视频列表，按照点赞数排序
      */
     @IgnoreAuth
+    @Limit(key="videoinfo:list", permitsPerSecond=5, timeout=500, timeunit = TimeUnit.MILLISECONDS, msg="接口限流，请稍后再试")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public R list(@RequestParam Map<String, Object> params,
                   VideoEntity video,
