@@ -13,13 +13,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.beanutils.BeanUtils;
 
 
-/**
- * 视频信息评论表
- * 数据库通用操作实体类（普通增删改查）
- * @author 
- * @email 
- * @date 2022-07-27 21:34:38
- */
 @TableName("comment")
 public class CommentEntity<T> implements Serializable {
 	private static final long serialVersionUID = 1L;

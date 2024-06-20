@@ -13,13 +13,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.beanutils.BeanUtils;
 
 
-/**
- * 用户
- * 数据库通用操作实体类（普通增删改查）
- * @author 
- * @email 
- * @date 2024-06-5 17:34:38
- */
+
 @TableName("users")
 public class UserEntity<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
