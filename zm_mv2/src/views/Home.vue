@@ -117,7 +117,7 @@ export default {
       if (index >= 0 && index < this.allVideos.length) {
         const video = this.allVideos[index];
         this.$set(this.playerOptions, "poster", video.cover);
-        this.$set(this.playerOptions.sources[0], "src", "http://localhost:8080/springbootb9wc1" + video.url);
+        this.$set(this.playerOptions.sources[0], "src", video.url);
       }
     },
     updateVisibleVideos() {

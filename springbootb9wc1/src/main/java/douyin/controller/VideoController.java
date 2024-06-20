@@ -1,5 +1,6 @@
 package douyin.controller;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +12,7 @@ import douyin.entity.UserEntity;
 import douyin.entity.UserVideoEntity;
 import douyin.service.UserVideoService;
 import douyin.service.VideoLikeService;
-import douyin.utils.PageUtils;
+import douyin.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,10 +22,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import douyin.entity.VideoEntity;
 import douyin.entity.view.VideoView;
 import douyin.service.VideoService;
-import douyin.utils.R;
-import douyin.utils.MPUtil;
 import douyin.service.StoreupService;
 import douyin.entity.StoreupEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 视频信息 后端接口
@@ -43,6 +43,9 @@ public class VideoController {
 
     @Autowired
     private UserVideoService userVideoService;
+
+    @Autowired
+    private AliOssUtil aliOssUtil;
 
     /**
      * 分页查询视频列表，按照点赞数排序
@@ -108,7 +111,33 @@ public class VideoController {
         return R.ok().put("data", isLike);
     }
 
-
+    /**
+     * 用户上传视频
+     */
+    @RequestMapping(path="/add", method = RequestMethod.POST)
+    public R add(@LoginUser UserEntity user,
+                 @RequestParam("video") MultipartFile videoFile,
+                 @RequestParam String introduction){
+        String name = videoFile.getOriginalFilename();
+        name = PinyinUtil.toPinyin(name);
+        String objectName = System.currentTimeMillis() +"_"+name;
+        String url;
+        try {
+            byte[] bytes = videoFile.getBytes();
+            url = aliOssUtil.upload(bytes, objectName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return R.error("上传视频失败");
+        }
+        VideoEntity video = new VideoEntity();
+        video.setIntroduction(introduction);
+        video.setUrl(url);
+        video.setArtistId(user.getId());
+        video.setName(name);
+        video.setReleaseDate(new Date());
+        videoService.save(video);
+        return R.ok();
+    }
     /**
      * 列表
      */
@@ -130,16 +159,6 @@ public class VideoController {
         return R.ok("查询视频信息成功").put("data", videoView);
     }
 
-
-    /**
-     * 保存
-     */
-    @RequestMapping("/add")
-    public R add(@RequestBody VideoEntity video, HttpServletRequest request){
-        video.setId(new Date().getTime() + Math.round(Math.random() * 1000));
-        videoService.save(video);
-        return R.ok();
-    }
 
 
     /**
