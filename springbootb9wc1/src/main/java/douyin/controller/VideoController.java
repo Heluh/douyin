@@ -117,21 +117,37 @@ public class VideoController {
     @RequestMapping(path="/add", method = RequestMethod.POST)
     public R add(@LoginUser UserEntity user,
                  @RequestParam("video") MultipartFile videoFile,
+                 @RequestParam("cover") MultipartFile coverFile,
                  @RequestParam String introduction){
         String name = videoFile.getOriginalFilename();
         name = PinyinUtil.toPinyin(name);
         String objectName = System.currentTimeMillis() +"_"+name;
-        String url;
+        String videoUrl;
         try {
             byte[] bytes = videoFile.getBytes();
-            url = aliOssUtil.upload(bytes, objectName);
+            videoUrl = aliOssUtil.upload(bytes, objectName);
         } catch (IOException e) {
             e.printStackTrace();
             return R.error("上传视频失败");
         }
+
+        // 处理封面文件
+        String coverName = coverFile.getOriginalFilename();
+        coverName = PinyinUtil.toPinyin(coverName);
+        String coverObjectName = System.currentTimeMillis() +"_"+ coverName;
+        String coverUrl;
+        try {
+            byte[] coverBytes = coverFile.getBytes();
+            coverUrl = aliOssUtil.upload(coverBytes, coverObjectName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return R.error("上传封面失败");
+        }
+
         VideoEntity video = new VideoEntity();
         video.setIntroduction(introduction);
-        video.setUrl(url);
+        video.setCover(coverUrl);
+        video.setUrl(videoUrl);
         video.setArtistId(user.getId());
         video.setName(name);
         video.setReleaseDate(new Date());
