@@ -37,14 +37,14 @@
         </div>
       </div>
     </transition>
-
   </div>
 </template>
 
 <script>
 import { Toast } from 'vant';
-import {Field, Form, Button, Image} from "vant";
-import Register from "@components/Register.vue";
+import { Field, Form, Button, Image } from 'vant';
+import Register from '@components/Register.vue';
+import { login } from '@request/api';  // 导入 login 方法
 
 export default {
   components: {
@@ -52,9 +52,9 @@ export default {
     [Field.name]: Field,
     [Form.name]: Form,
     [Button.name]: Button,
-    [Image.name]: Image
+    [Image.name]: Image,
   },
-  name: "Login",
+  name: 'Login',
   data() {
     return {
       username: '',
@@ -63,16 +63,29 @@ export default {
     };
   },
   methods: {
-    onSubmit() {
-      /*console.log('submit', values);*/
-      if(this.username=="123456"&&this.password=="123456"){
-        Toast.success('登录成功');
+    async onSubmit() {
+      if (!this.username || !this.password) {
+        Toast.fail('请填写用户名和密码');
+        return;
       }
-      else if(this.username==""&&this.password==""){
-        Toast('请输入账号或密码');
-      }
-      else{
-        Toast.fail('账号或密码错误');
+      try {
+        const response = await login(this.username, this.password);
+        console.log('Response:', response); // 调试用，查看 response 对象
+        console.log(response.code);
+        if (response.code === 0) {
+            Toast.success('登录成功');
+            const token = response.token;
+            // 保存 token 到本地存储或状态管理
+            localStorage.setItem('token', token);
+            // 处理登录成功逻辑，例如跳转到首页
+
+        } else{
+          Toast.fail(response.message || '登录失败');
+        }
+      } catch (error) {
+        Toast.fail('登录失败');
+        console.error('Error:', error); // 调试用，查看错误对象
+
       }
     },
     closeRegister() {
@@ -80,21 +93,19 @@ export default {
     }
   }
 }
-
 </script>
 
 <style scoped>
-.login{
+.login {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
   background-color: #f5f5f5;
-
 }
 
-.reg{
+.reg {
   color: #20a0ff;
   cursor: pointer;
 }
@@ -119,8 +130,6 @@ export default {
 }
 
 .title {
-  /* border-radius: 15px; */
-  size:1px;
   height: 50px;
   line-height: 50px;
   background-color: #20a0ff;
@@ -137,6 +146,6 @@ export default {
 .slide-up-leave-to {
   transform: translateX(100%);
 }
-
 </style>
+
 
