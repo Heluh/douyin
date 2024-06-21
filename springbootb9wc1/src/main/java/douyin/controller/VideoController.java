@@ -62,11 +62,13 @@ public class VideoController {
         if(releaseStart != null) wrapper.ge("release_date", releaseStart);
         if(releaseEnd != null) wrapper.le("release_date", releaseEnd);
 
-        // 获取用户已经看过的所有视频的 ID 列表
-        List<Long> watchedVideoIds = userVideoService.getWatchedVideoIds(user.getId());
-
-        // 在查询视频列表时排除这些 ID
-        wrapper.notIn("v.id", watchedVideoIds);
+        //如果用户已经登录，返回的视频列表中排除用户已经看过的视频
+        if(user != null) {
+            // 获取用户已经看过的所有视频的 ID 列表
+            List<Long> watchedVideoIds = userVideoService.getWatchedVideoIds(user.getId());
+            // 在查询视频列表时排除这些 ID
+            wrapper.notIn("v.id", watchedVideoIds);
+        }
 
         params.put("order", "desc");
         params.put("sort", "like_count");
