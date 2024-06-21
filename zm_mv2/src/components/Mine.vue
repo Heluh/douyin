@@ -5,6 +5,7 @@
         <img :src="user.avatar || 'https://img01.yzcdn.cn/vant/cat.jpeg'" alt="avatar" />
       </div>
       <div class="user-info">
+        <button @click="logout" class="logout-button">退出登录</button>
         <h2>{{ user.username }}</h2>
         <p>姓名：{{ user.name }}</p>
       </div>
@@ -69,7 +70,7 @@ export default {
         console.error('Error fetching user data:', error);
       }
     } else {
-      this.$router.push({ name: 'Login' });
+      await this.$router.push({name: 'Login'});
     }
   },
   methods: {
@@ -83,9 +84,13 @@ export default {
         // 在这里处理文件上传逻辑
       }
     },
-    backToHome(){
+    backToHome() {
       this.$router.push('/');
-    }
+    },
+    logout() {
+      localStorage.removeItem('token');
+      this.$router.push('/');
+    },
   },
 };
 </script>
@@ -117,6 +122,8 @@ export default {
 
 .user-info {
   margin-left: 16px;
+  position: relative;
+  flex: 1;
 }
 
 .user-info h2 {
@@ -127,6 +134,24 @@ export default {
 .user-info p {
   margin: 0;
   font-size: 16px;
+}
+
+.logout-button {
+  position: absolute;
+  right: 0; /* 调整按钮在右侧 */
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #d32f2f;
 }
 
 .details {

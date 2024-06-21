@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import {islike, like, list, pl} from "@request/api";
+import {islike, like, list, pl, recordVideoWatch} from "@request/api";
 import "../video/index";
 import { videoPlayer } from "vue-video-player";
 import {Popup} from "vant";
@@ -164,6 +164,16 @@ export default {
         this.visibleVideos[index].liked = res.data.data;
       } else {
         console.error(res.data.msg);
+      }
+
+      // 调用记录观看接口
+      try {
+        const response = await recordVideoWatch(videoId);
+        if (response.data.code !== 0) {
+          console.error('Failed to record video watch:', response.data.msg);
+        }
+      } catch (error) {
+        console.error('Error recording video watch:', error);
       }
 
       if (this.currentIndex >= this.allVideos.length - 5) {

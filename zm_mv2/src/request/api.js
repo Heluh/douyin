@@ -56,3 +56,10 @@ export const login = (userName, password) => service.post(
     password: password
   }
 });
+
+export const recordVideoWatch = (videoId) => service.post(
+    `/springbootb9wc1/videoinfo/click/${videoId}`,
+    null,
+    {
+    }
+);

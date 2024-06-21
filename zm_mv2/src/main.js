@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import { Swipe, SwipeItem, ActionSheet, Icon,List } from 'vant';
+import 'vant/lib/index.css';
 
 Vue.use(Swipe).use(SwipeItem).use(ActionSheet).use(Icon).use(List);
 Vue.config.productionTip = false
