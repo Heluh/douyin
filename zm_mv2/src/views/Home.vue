@@ -2,7 +2,7 @@
   <div class="home">
     <div class="top-nav">
       <button class="nav-button1" @click="navigateTo('recommend')">推荐</button>
-      <button class="nav-button2" @click="navigateTo('')">+</button>
+      <button class="nav-button2" @click="navigateTo('upload')">+</button>
       <button class="nav-button3" @click="navigateTo('my')">我的</button>
     </div>
     <van-swipe
@@ -252,8 +252,13 @@ export default {
       } else if (tab === 'my' && !token) {
         this.showPopup = true;
         this.afterLogin = () => this.navigateTo(tab);
-      } else {
+      } else if (tab === 'my' && token) {
         router.push('/my-videos');
+      }else if (tab === 'upload' && !token) {
+        this.showPopup = true;
+        this.afterLogin = () => this.navigateTo(tab);
+      } else {
+        router.push('/upload');
       }
     },
   }
@@ -282,6 +287,8 @@ export default {
   color: #ffffff;
   cursor: pointer;
   font-weight: bold;
+  margin-left: 40px;
+  margin-right: -40px;
 }
 .nav-button2 {
   background: transparent;
@@ -299,6 +306,8 @@ export default {
   color: #ffffff;
   cursor: pointer;
   font-weight: bold;
+  margin-left: -40px;
+  margin-right: 40px;
 }
 .main {
   height: 100%;
