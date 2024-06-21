@@ -112,6 +112,18 @@ public class VideoController {
     }
 
     /**
+     *  查询用户点赞的视频
+     */
+    @RequestMapping(value = "/likelist", method = RequestMethod.GET)
+    public R likeList(@LoginUser UserEntity user, @RequestParam Map<String, Object> params){
+        QueryWrapper<VideoEntity> wrapper = new QueryWrapper<>();
+        wrapper.in("v.id", videoLikeService.getLikeVideoIds(user.getId()));
+        System.out.println(videoLikeService.getLikeVideoIds(user.getId()));
+        PageUtils page = videoService.queryPage(params, wrapper);
+        return R.ok().put("data", page);
+    }
+
+    /**
      * 用户上传视频
      */
     @RequestMapping(path="/add", method = RequestMethod.POST)

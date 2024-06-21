@@ -13,4 +13,7 @@
         DELETE FROM video_likes WHERE video_id = #{videoId} AND user_id = #{userId}
     </delete>
 
+    <select id="getLikeVideoIds">
+        SELECT video_id FROM video_likes WHERE user_id = #{userId}
+    </select>
 </mapper>

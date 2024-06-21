@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class VideoLikeServiceImpl implements VideoLikeService {
 
@@ -55,5 +57,10 @@ public class VideoLikeServiceImpl implements VideoLikeService {
         queryWrapper.eq("video_id", videoId).eq("user_id", id);
         VideoLikeEntity likeEntity = videoLikeDao.selectOne(queryWrapper);
         return likeEntity != null;
+    }
+
+    @Override
+    public List<Long> getLikeVideoIds(Long userId) {
+        return videoLikeDao.getLikeVideoIds(userId);
     }
 }
