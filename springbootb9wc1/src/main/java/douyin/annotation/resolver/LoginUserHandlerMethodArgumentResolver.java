@@ -29,15 +29,20 @@ public class LoginUserHandlerMethodArgumentResolver implements HandlerMethodArgu
         if (token == null || !token.startsWith("Bearer ")) {
             return null;
         }else{
-            token = token.substring(7);
+            try{
+                token = token.substring(7);
 
-            // 解析token
-            Claims claims = JwtUtil.getClaimsFromToken(token);
+                // 解析token
+                Claims claims = JwtUtil.getClaimsFromToken(token);
 
-            UserEntity user = new UserEntity();
-            user.setId(claims.get("userId", Long.class));
-            user.setUsername(claims.get("username", String.class));
-            return user;
+                UserEntity user = new UserEntity();
+                user.setId(claims.get("userId", Long.class));
+                user.setUsername(claims.get("username", String.class));
+                return user;
+            }catch (Exception e){
+                return null;
+            }
+
         }
 
     }
