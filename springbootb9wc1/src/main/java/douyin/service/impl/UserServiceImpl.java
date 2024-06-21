@@ -55,4 +55,10 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
 	public UserView selectView(Wrapper<UserEntity> wrapper) {
 		return baseMapper.selectView(wrapper);
 	}
+
+	// 更新当前用户基本信息
+	@Override
+	public void update(UserEntity user) {
+		baseMapper.updateById(user);
+	}
 }

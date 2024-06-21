@@ -31,7 +31,9 @@ public interface UserService extends IService<UserEntity> {
    	UserView selectView(@Param("ew") Wrapper<UserEntity> wrapper);
    	
    	PageUtils queryPage(Map<String, Object> params,Wrapper<UserEntity> wrapper);
-   	
+
+	// 更新当前用户基本信息
+	void update(UserEntity user);
 
 }
 

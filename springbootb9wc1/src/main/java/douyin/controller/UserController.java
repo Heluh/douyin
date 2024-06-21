@@ -116,26 +116,6 @@ public class UserController {
 	}
 
 	/**
-	 * 前端列表
-	 */
-	@RequestMapping(path="/list",method = RequestMethod.GET)
-	public R list(@RequestParam Map<String, Object> params) {
-		QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
-		PageUtils page = userService.queryPage(params, queryWrapper);
-		return R.ok().put("data", page);
-	}
-
-	/**
-	 * 列表
-	 */
-	@RequestMapping(path = "/lists", method = RequestMethod.GET)
-	public R list(UserEntity user) {
-		QueryWrapper<UserEntity> queryWrapper = new QueryWrapper<>();
-		queryWrapper.allEq(MPUtil.allEQMapPre(user, "user"));
-		return R.ok().put("data", userService.selectListView(queryWrapper));
-	}
-
-	/**
 	 * 查询
 	 */
 	@RequestMapping("/query")
@@ -156,30 +136,22 @@ public class UserController {
 		return R.ok().put("data", user);
 	}
 
-	/**
-	 * 前端保存
-	 */
-	@RequestMapping("/add")
-	public R add(@RequestBody UserEntity user, HttpServletRequest request) {
-		user.setId(new Date().getTime() + new Double(Math.floor(Math.random() * 1000)).longValue());
-		// ValidatorUtils.validateEntity(user);
-		UserEntity existingUser = userService.getOne(new QueryWrapper<UserEntity>().eq("username", user.getUsername()));
-		if (existingUser != null) {
-			return R.error("用户已存在");
-		}
-		user.setId(new Date().getTime());
-		userService.save(user);
-		return R.ok();
-	}
 
 	/**
-	 * 修改
+	 * 更新当前用户信息
 	 */
-	@RequestMapping("/update")
+	@RequestMapping(path = "/update", method = RequestMethod.POST)
 	@Transactional
-	public R update(@RequestBody UserEntity user, HttpServletRequest request) {
-		// ValidatorUtils.validateEntity(user);
-		userService.updateById(user); // 全部更新
+	public R update(@LoginUser UserEntity user,
+					@RequestParam String name,
+					@RequestParam String sex,
+					@RequestParam String phone) {
+
+		UserEntity user1 = userService.getById(user.getId());
+		user1.setName(name);
+		user1.setSex(sex);
+		user1.setPhone(phone);
+		userService.update(user1);
 		return R.ok();
 	}
 
@@ -192,45 +164,4 @@ public class UserController {
 		return R.ok();
 	}
 
-	/**
-	 * 提醒接口
-	 */
-	@RequestMapping("/remind/{columnName}/{type}")
-	public R remindCount(@PathVariable("columnName") String columnName, HttpServletRequest request,
-						 @PathVariable("type") String type, @RequestParam Map<String, Object> map) {
-		map.put("column", columnName);
-		map.put("type", type);
-
-		if (type.equals("2")) {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			Calendar c = Calendar.getInstance();
-			Date remindStartDate = null;
-			Date remindEndDate = null;
-			if (map.get("remindstart") != null) {
-				Integer remindStart = Integer.parseInt(map.get("remindstart").toString());
-				c.setTime(new Date());
-				c.add(Calendar.DAY_OF_MONTH, remindStart);
-				remindStartDate = c.getTime();
-				map.put("remindstart", sdf.format(remindStartDate));
-			}
-			if (map.get("remindend") != null) {
-				Integer remindEnd = Integer.parseInt(map.get("remindend").toString());
-				c.setTime(new Date());
-				c.add(Calendar.DAY_OF_MONTH, remindEnd);
-				remindEndDate = c.getTime();
-				map.put("remindend", sdf.format(remindEndDate));
-			}
-		}
-
-		QueryWrapper<UserEntity> wrapper = new QueryWrapper<>();
-		if (map.get("remindstart") != null) {
-			wrapper.ge(columnName, map.get("remindstart"));
-		}
-		if (map.get("remindend") != null) {
-			wrapper.le(columnName, map.get("remindend"));
-		}
-
-		long count = userService.count(wrapper);
-		return R.ok().put("count", count);
-	}
 }

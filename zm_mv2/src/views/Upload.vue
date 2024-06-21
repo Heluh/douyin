@@ -32,22 +32,6 @@ const videoPreview = ref(null);
 const coverPreview = ref(null);
 const introduction = ref('');
 
-const navigateTo = (tab) => {
-  const token = localStorage.getItem('token');
-  if (tab === 'recommend') {
-    router.push('/');
-  } else if (tab === 'my' && !token) {
-    this.showPopup = true;
-    this.afterLogin = () => this.navigateTo(tab);
-  } else if (tab === 'my' && token) {
-    router.push('/my-videos');
-  }else if (tab === 'upload' && !token) {
-    this.showPopup = true;
-    this.afterLogin = () => this.navigateTo(tab);
-  } else {
-    router.push('/upload');
-  }
-};
 const handleVideoFile = (event) => {
   videoFile.value = event.target.files[0];
   videoPreview.value = URL.createObjectURL(videoFile.value);
@@ -74,7 +58,7 @@ const submitUpload = async () => {
     console.log(res);
     if (res.data.code === 0) {
       alert('上传成功');
-      router.push('/my-videos');
+      router.push('/mine');
     } else {
       alert('上传失败');
     }
