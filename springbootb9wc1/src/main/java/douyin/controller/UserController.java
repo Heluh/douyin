@@ -100,20 +100,6 @@ public class UserController {
 		return R.ok().put("data", user);
 	}
 
-	/**
-	 * 密码重置
-	 */
-	@IgnoreAuth
-	@RequestMapping(value = "/resetPass")
-	public R resetPass(String username, HttpServletRequest request) {
-		UserEntity user = userService.getOne(new QueryWrapper<UserEntity>().eq("username", username));
-		if (user == null) {
-			return R.error("账号不存在");
-		}
-		user.setPassword("123456");
-		userService.updateById(user);
-		return R.ok("密码已重置为：123456");
-	}
 
 	/**
 	 * 查询
@@ -141,7 +127,6 @@ public class UserController {
 	 * 更新当前用户信息
 	 */
 	@RequestMapping(path = "/update", method = RequestMethod.POST)
-	@Transactional
 	public R update(@LoginUser UserEntity user,
 					@RequestParam String name,
 					@RequestParam String sex,
@@ -151,6 +136,25 @@ public class UserController {
 		user1.setName(name);
 		user1.setSex(sex);
 		user1.setPhone(phone);
+		userService.update(user1);
+		return R.ok();
+	}
+
+	/**
+	 * 更新密码
+	 */
+	@IgnoreAuth
+	@RequestMapping(path = "/updatePass", method = RequestMethod.POST)
+	public R updatePass(@LoginUser UserEntity user,
+						@RequestParam String oldPass,
+						@RequestParam String newPass) {
+		UserEntity user1 = userService.getById(user.getId());
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		if (!passwordEncoder.matches(oldPass, user1.getPassword())) {
+			return R.error("原密码不正确");
+		}
+		String encodedPassword = passwordEncoder.encode(newPass);
+		user1.setPassword(encodedPassword);
 		userService.update(user1);
 		return R.ok();
 	}
