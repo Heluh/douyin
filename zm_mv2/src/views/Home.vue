@@ -29,7 +29,7 @@
             <p class="introduction">{{ video.introduction }}</p>
           </div>
           <div class="lk" @click="like(video.id)">
-            <van-icon class="like" name="like" size="30"/>
+            <van-icon class="like" :class="{ 'liked': video.liked }" name="like" size="30"/>
             <span>{{ video.likeCount }}</span>
           </div>
           <div class="pl" @click="openPl(video.id)">
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import {like, list, pl} from "@request/api";
+import {islike, like, list, pl} from "@request/api";
 import "../video/index";
 import { videoPlayer } from "vue-video-player";
 import {Popup} from "vant";
@@ -104,7 +104,11 @@ export default {
     };
   },
   mounted() {
-    this.fetchVideos();
+    this.fetchVideos().then(() => {
+      if (this.visibleVideos.length > 0) {
+        this.checkLikeStatus(this.visibleVideos[0].id);
+      }
+    });
   },
   computed: {
     player() {
@@ -119,6 +123,15 @@ export default {
         console.log(res);
         this.allVideos = this.allVideos.concat(res.data.data.list);
         this.updateVisibleVideos();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async checkLikeStatus(videoId) {
+      try {
+        const res = await islike(videoId);
+        const videoIndex = this.visibleVideos.findIndex(video => video.id === videoId);
+        this.visibleVideos[videoIndex].liked = res.data.data;
       } catch (error) {
         console.error(error);
       }
@@ -144,6 +157,14 @@ export default {
 
     async onChange(index) {
       this.currentIndex = this.start + index;
+      // 判断用户是否已经点赞
+      const videoId = this.visibleVideos[index].id;
+      const res = await islike(videoId);
+      if (res.data.code === 0) {
+        this.visibleVideos[index].liked = res.data.data;
+      } else {
+        console.error(res.data.msg);
+      }
 
       if (this.currentIndex >= this.allVideos.length - 5) {
         this.page += 1;
@@ -181,8 +202,15 @@ export default {
           };
         }else{
           const res = await like(videoId);
-          if(res.code === 0) {
-            this.visibleVideos[this.currentIndex - this.start].likeCount += 1;
+          console.log(this.visibleVideos[this.currentIndex - this.start])
+          if(res.data.code === 0) {
+            if(this.visibleVideos[this.currentIndex - this.start].liked === false){
+              this.visibleVideos[this.currentIndex - this.start].likeCount += 1;
+              this.visibleVideos[this.currentIndex - this.start].liked = true;
+            }else{
+              this.visibleVideos[this.currentIndex - this.start].likeCount -= 1;
+              this.visibleVideos[this.currentIndex - this.start].liked = false;
+            }
           }
         }
 
@@ -202,7 +230,7 @@ export default {
         if (document.querySelector(".van-action-sheet__content")) {
           document.querySelector(".van-action-sheet__content").scrollTop = 0;
         }
-        this.plist = res.comments;
+        this.plist = res.data.data.comments;
       } catch (error) {
         console.error(error);
       }
@@ -284,6 +312,14 @@ export default {
   overflow: hidden;
   white-space: nowrap;
   font-size: 17px;
+}
+
+.like {
+  color: #fff; /* 默认的颜色 */
+}
+
+.like.liked {
+  color: red; /* 点赞后的颜色 */
 }
 
 .login_popup{

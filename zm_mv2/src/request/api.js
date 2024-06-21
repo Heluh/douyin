@@ -28,6 +28,11 @@ export const like = (v2) => service.post(
   `/springbootb9wc1/videoinfo/like/${v2}`
 );
 
+//用户是否点赞
+export const islike = (v2) => service.get(
+  `/springbootb9wc1/videoinfo/islike/${v2}`
+);
+
 export const pl = (v3, v4) => service.get(
   'springbootb9wc1/comment/mv',
   {

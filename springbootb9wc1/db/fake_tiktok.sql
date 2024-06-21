@@ -11,7 +11,7 @@
  Target Server Version : 50550
  File Encoding         : 65001
 
- Date: 19/06/2024 01:50:10
+ Date: 21/06/2024 13:57:42
 */
 
 SET NAMES utf8mb4;
@@ -68,18 +68,20 @@ CREATE TABLE `storeup`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `user_video`;
 CREATE TABLE `user_video`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
   `video_id` bigint(20) NOT NULL,
-  PRIMARY KEY (`user_id`, `video_id`) USING BTREE,
+  `watch_time` datetime NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
   INDEX `video_id`(`video_id`) USING BTREE,
-  CONSTRAINT `user_video_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-  CONSTRAINT `user_video_ibfk_2` FOREIGN KEY (`video_id`) REFERENCES `videos` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+  INDEX `user_video_users_id_fk`(`user_id`) USING BTREE,
+  CONSTRAINT `user_video_users_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `user_video_videos_id_fk` FOREIGN KEY (`video_id`) REFERENCES `videos` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of user_video
 -- ----------------------------
-INSERT INTO `user_video` VALUES (11, 31);
 
 -- ----------------------------
 -- Table structure for users
@@ -96,7 +98,7 @@ CREATE TABLE `users`  (
   `phone` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '手机',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `yonghuming`(`username`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1717323412959 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1718937478893 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of users
@@ -111,6 +113,12 @@ INSERT INTO `users` VALUES (1717062169437, '2024-05-30 17:42:49', '12345', '$2a$
 INSERT INTO `users` VALUES (1717298167268, '2024-06-02 11:16:07', '1234567', '$2a$10$PBtV662SavJncJmf8mkVqusQIWlkgozmvNJfR/asps0hXw4LOW4.G', '1', NULL, NULL, NULL);
 INSERT INTO `users` VALUES (1717319730576, '2024-06-02 17:15:30', '12345678', '$2a$10$iJ9dTnKZ8agOGiRPZaSgM.wmPBiNy9D4cvZnhAcRNzw3w/6UMI76e', '1', NULL, NULL, NULL);
 INSERT INTO `users` VALUES (1717323412958, '2024-06-02 18:16:53', '12345679', '$2a$10$UrGSNilXuygWPpvISsP1MexWRY3E83EkAxV0AhGx/yH1hUg3bY.1S', '12345', NULL, NULL, NULL);
+INSERT INTO `users` VALUES (1718796999467, '2024-06-19 19:36:38', 'testuser', '$2a$10$JzdwFxJcHrhnNzo.uaXX3uJPXHmPtddrnyPDWbptfGU8O77/GNj8y', 'Test User', 'male', '', '13800138000');
+INSERT INTO `users` VALUES (1718797082062, '2024-06-19 19:38:01', 'jiejie', '$2a$10$ryHczT9DSrK2WbrNQRjvPOHD7SPlvArDVfKG1TEjOE0BgGRUaufDG', 'tony', '男', NULL, '13456789000');
+INSERT INTO `users` VALUES (1718870215253, '2024-06-20 15:56:54', 'clearlove', '$2a$10$s5KUH6nBYP1ooAAu67LkWu86LFU.ZCfMJ8LJ363IvJhPyiKlGX0nm', 'jackson', '男', NULL, '1662168909');
+INSERT INTO `users` VALUES (1718875756025, '2024-06-20 17:29:14', 'meiko', '$2a$10$3hXxMkIjMGlPgcK9a15b0.OYxGmMK4BWM/mhnIvAxJBKW3qgzPuJW', 'clause', '女', NULL, '1662168909');
+INSERT INTO `users` VALUES (1718879133795, '2024-06-20 18:25:32', 'jie', '$2a$10$NxzKnJhSYd.8P4KWtmXeguLwewZ/M.zFGSnsvYZ6SIp4rivAStCDq', 'hmx', '男', NULL, '12345676868');
+INSERT INTO `users` VALUES (1718937478892, '2024-06-21 10:37:59', 'wsk', '$2a$10$xBJPwZJLhGcIdY7HYhwbhOyscmof4s7NKahmuiYue5zHQLL5dXTTa', 'wsk', '男', NULL, '15713287921');
 
 -- ----------------------------
 -- Table structure for video_likes
@@ -127,11 +135,12 @@ CREATE TABLE `video_likes`  (
   INDEX `user_id`(`user_id`) USING BTREE,
   CONSTRAINT `video_likes_ibfk_1` FOREIGN KEY (`video_id`) REFERENCES `videos` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `video_likes_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of video_likes
 -- ----------------------------
+INSERT INTO `video_likes` VALUES (1, 0, 1718879133795, 1, '2024-06-21 13:48:19');
 
 -- ----------------------------
 -- Table structure for videos
@@ -145,25 +154,19 @@ CREATE TABLE `videos`  (
   `url` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '视频内容',
   `introduction` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '视频介绍',
   `release_date` date NULL DEFAULT NULL COMMENT '发布日期',
-  `click_time` datetime NULL DEFAULT NULL COMMENT '最近点击时间',
   `artist_id` bigint(20) NULL DEFAULT NULL COMMENT '作者id',
   `like_count` bigint(10) UNSIGNED ZEROFILL NULL DEFAULT 0000000000 COMMENT '点赞数量',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 42 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '视频信息' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1804030613191397378 CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '视频信息' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of videos
 -- ----------------------------
-INSERT INTO `videos` VALUES (31, '2024-05-29 17:45:57', '视频名称1', 'upload/shipinxinxi_shipinfengmian1.jpg', '/videos/a.mp4', '视频介绍1', '2022-07-27', '2022-07-27 21:35:18', 11, 0000000021);
-INSERT INTO `videos` VALUES (32, '2024-05-29 17:45:58', '视频名称2', 'upload/shipinxinxi_shipinfengmian2.jpg', '/videos/b.mp4', '视频介绍2', '2022-07-27', '2022-07-27 21:35:18', 12, 0000000015);
-INSERT INTO `videos` VALUES (33, '2024-05-29 17:45:59', '视频名称3', 'upload/shipinxinxi_shipinfengmian3.jpg', '/videos/c.mp4', '视频介绍3', '2022-07-27', '2022-07-27 21:35:18', 13, 0000000004);
-INSERT INTO `videos` VALUES (34, '2024-05-29 17:45:59', '视频名称4', 'upload/shipinxinxi_shipinfengmian4.jpg', '/videos/a.mp4', '视频介绍4', '2022-07-27', '2022-07-27 21:35:18', 14, 0000000004);
-INSERT INTO `videos` VALUES (35, '2024-05-29 17:46:00', '视频名称5', 'upload/shipinxinxi_shipinfengmian5.jpg', '/videos/b.mp4', '视频介绍5', '2022-07-27', '2022-07-27 21:35:18', 15, 0000000026);
-INSERT INTO `videos` VALUES (36, '2024-06-02 19:50:46', '视频名称6', 'upload/shipinxinxi_shipinfengmian6.jpg', '/videos/c.mp4', '视频介绍6', '2022-07-27', '2022-07-27 21:35:18', 1717298167268, 0000000002);
-INSERT INTO `videos` VALUES (37, '2024-06-02 19:36:20', '视频名称7', 'upload/shipinxinxi_shipinfengmian6.jpg', '/videos/c.mp4', '视频介绍6', '2022-07-27', '2022-07-27 21:35:18', 1717298167268, 0000000002);
-INSERT INTO `videos` VALUES (38, '2024-06-02 19:36:15', '视频名称8', 'upload/shipinxinxi_shipinfengmian6.jpg', '/videos/c.mp4', '视频介绍6', '2022-07-27', '2022-07-27 21:35:18', 1717298167268, 0000000016);
-INSERT INTO `videos` VALUES (39, '2024-06-02 19:36:14', '视频名称9', 'upload/shipinxinxi_shipinfengmian6.jpg', '/videos/c.mp4', '视频介绍6', '2022-07-27', '2022-07-27 21:35:18', 1717298167268, 0000000000);
-INSERT INTO `videos` VALUES (40, '2024-06-02 19:36:12', '视频名称10', 'upload/shipinxinxi_shipinfengmian6.jpg', '/videos/c.mp4', '视频介绍6', '2022-07-27', '2022-07-27 21:35:18', 1717298167268, 0000000000);
-INSERT INTO `videos` VALUES (41, '2024-06-02 19:36:09', '视频名称11', 'upload/shipinxinxi_shipinfengmian6.jpg', '/videos/c.mp4', '视频介绍6', '2022-07-27', '2022-07-27 21:35:18', 1717298167268, 0000000002);
+INSERT INTO `videos` VALUES (0, '2024-06-21 13:19:15', '3c41bce4c95258d4ef646f822d180805.mp4', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718884693632_1.jpg', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718885579009_3c41bce4c95258d4ef646f822d180805.mp4', '被艾特看双重晚霞真的是一件浪漫且幸福的事', '2024-06-20', 1717298167268, 0000000001);
+INSERT INTO `videos` VALUES (1, '2024-06-21 13:19:15', '7cb3dbb1cea5f2bf4c35c39052895114.mp4', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718884693632_1.jpg', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718885649682_7cb3dbb1cea5f2bf4c35c39052895114.mp4', '一不小心误入了仙境', '2024-06-20', 1717298167268, 0000000000);
+INSERT INTO `videos` VALUES (2, '2024-06-21 13:19:15', '0434d938e8689792641191cc4af9b96d.mp4', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718884693632_1.jpg', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718885704988_0434d938e8689792641191cc4af9b96d.mp4', '一不小心误入了仙境', '2024-06-20', 1717298167268, 0000000000);
+INSERT INTO `videos` VALUES (3, '2024-06-21 13:19:15', '220114_01_Drone_4k_017.mp4', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718884693632_1.jpg', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718886170945_220114_01_Drone_4k_017.mp4', '简单描述一下你的光', '2024-06-20', 1717298167268, 0000000000);
+INSERT INTO `videos` VALUES (4, '2024-06-21 13:19:15', '327-1_327-0525.mov', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718884693632_1.jpg', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718886213603_327-1_327-0525.mov', '美丽的风景', '2024-06-20', 1717298167268, 0000000000);
+INSERT INTO `videos` VALUES (1804030613191397377, '2024-06-21 13:56:30', '3c41bce4c95258d4ef646f822d180805.mp4', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718949389961_1.jpg', 'https://fake-tiktok.oss-cn-beijing.aliyuncs.com/1718949388847_3c41bce4c95258d4ef646f822d180805.mp4', '十分美丽的风景', '2024-06-21', 1717298167268, 0000000000);
 
 SET FOREIGN_KEY_CHECKS = 1;
