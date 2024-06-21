@@ -77,7 +77,8 @@ export default {
             const token = response.data.token;
             // 保存 token 到本地存储或状态管理
             localStorage.setItem('token', token);
-            this.$emit('login-success');  // 触发 login-success 事件
+            this.$emit('login-success');  // 触发 login-success 事件\
+            await this.$router.push('/mine')
         } else{
           Toast.fail(response.data.msg || '登录失败');
         }
