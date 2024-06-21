@@ -2,11 +2,10 @@
   <div class="home">
     <div class="top-nav">
       <button class="nav-button1" @click="navigateTo('recommend')">推荐</button>
-      <button class="nav-button2" @click="navigateTo('upload')">+</button>
       <button class="nav-button3" @click="navigateTo('my')">我的</button>
     </div>
     <van-swipe
-        style="height: 100vh"
+        style="height: calc(100vh - 64px)"
         vertical
         @change="onChange"
         :show-indicators="false"

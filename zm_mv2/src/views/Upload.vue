@@ -88,6 +88,7 @@ const submitUpload = async () => {
 
 <style scoped>
 .upload {
+  padding-bottom: 64px;
   position: relative;
 }
 
