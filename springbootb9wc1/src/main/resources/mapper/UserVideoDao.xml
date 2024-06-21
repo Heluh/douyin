@@ -5,4 +5,8 @@
     <select id="findByUserIdAndVideoId" resultType="douyin.entity.UserVideoEntity">
         SELECT * FROM user_video WHERE user_id = #{userId} AND video_id = #{videoId}
     </select>
+
+    <select id="getWatchedVideoIds">
+        SELECT video_id FROM user_video WHERE user_id = #{userId}
+    </select>
 </mapper>

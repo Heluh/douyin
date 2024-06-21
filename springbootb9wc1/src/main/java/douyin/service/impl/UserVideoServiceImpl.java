@@ -6,6 +6,8 @@ import douyin.service.UserVideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserVideoServiceImpl implements UserVideoService {
     @Autowired
@@ -21,7 +23,10 @@ public class UserVideoServiceImpl implements UserVideoService {
         }else{
             userVideoDao.insert(userVideoEntity);
         }
+    }
 
-
+    @Override
+    public List<Long> getWatchedVideoIds(Long userId) {
+        return userVideoDao.getWatchedVideoIds(userId);
     }
 }

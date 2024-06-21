@@ -56,10 +56,17 @@ public class VideoController {
     public R list(@RequestParam Map<String, Object> params,
                   VideoEntity video,
                   @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date releaseStart,
-                  @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date releaseEnd){
+                  @RequestParam(required = false) @DateTimeFormat(pattern="yyyy-MM-dd") Date releaseEnd,
+                  @LoginUser UserEntity user){
         QueryWrapper<VideoEntity> wrapper = new QueryWrapper<>();
         if(releaseStart != null) wrapper.ge("release_date", releaseStart);
         if(releaseEnd != null) wrapper.le("release_date", releaseEnd);
+
+        // 获取用户已经看过的所有视频的 ID 列表
+        List<Long> watchedVideoIds = userVideoService.getWatchedVideoIds(user.getId());
+
+        // 在查询视频列表时排除这些 ID
+        wrapper.notIn("v.id", watchedVideoIds);
 
         params.put("order", "desc");
         params.put("sort", "like_count");
