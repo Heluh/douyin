@@ -71,16 +71,15 @@ export default {
       try {
         const response = await login(this.username, this.password);
         console.log('Response:', response); // 调试用，查看 response 对象
-        console.log(response.code);
-        if (response.code === 0) {
+        console.log(response.data.code);
+        if (response.data.code === 0) {
             Toast.success('登录成功');
-            const token = response.token;
+            const token = response.data.token;
             // 保存 token 到本地存储或状态管理
             localStorage.setItem('token', token);
-            // 处理登录成功逻辑，例如跳转到首页
-
+            this.$emit('login-success');  // 触发 login-success 事件
         } else{
-          Toast.fail(response.message || '登录失败');
+          Toast.fail(response.data.msg || '登录失败');
         }
       } catch (error) {
         Toast.fail('登录失败');

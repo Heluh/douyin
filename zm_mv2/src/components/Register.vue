@@ -84,11 +84,11 @@ export default {
           phone: this.phone,
         });
 
-        if (response.code === 0) {
+        if (response.data.code === 0) {
           Toast.success('注册成功');
           this.closeRegister();
         } else {
-          Toast.fail(response.message || '注册失败');
+          Toast.fail(response.data.msg || '注册失败');
         }
       } catch (error) {
         Toast.fail('注册失败');

@@ -45,7 +45,7 @@
         position="bottom"
         class="login_popup"
     >
-      <Login/>
+      <Login @login-success="onLoginSuccess"/>
     </van-popup>
   </div>
 </template>
@@ -79,6 +79,7 @@ export default {
       loading: false,
       page: 1,
       initialSwipe: 0,
+      afterLogin: null,
       playerOptions: {
         playbackRates: [0.5, 1.0, 1.5, 2.0], // 可选的播放速度
         autoplay: true,
@@ -115,7 +116,7 @@ export default {
       try {
         const res = await list(this.page, 10); // Fetch 10 videos initially
         console.log(res);
-        this.allVideos = this.allVideos.concat(res.data.list);
+        this.allVideos = this.allVideos.concat(res.data.data.list);
         this.updateVisibleVideos();
       } catch (error) {
         console.error(error);
@@ -146,8 +147,8 @@ export default {
       if (this.currentIndex >= this.allVideos.length - 5) {
         this.page += 1;
         list(this.page, 10).then(res => {
-          console.log(res.data.list);
-          this.allVideos = this.allVideos.concat(res.data.list);
+          console.log(res.data.data.list);
+          this.allVideos = this.allVideos.concat(res.data.data.list);
         }).catch(error => {
           console.error(error);
         });
@@ -160,14 +161,30 @@ export default {
       this.player.pause();
     },
 
+    onLoginSuccess() {
+      this.showPopup = false; // 隐藏登录页面
+      if (this.afterLogin) {
+        this.afterLogin();
+        this.afterLogin = null;
+      }
+    },
+
     //点赞
     async like(videoId) {
       try {
-        const res = await like(videoId);
-
-        if(res.code === 0) {
-          this.visibleVideos[this.currentIndex - this.start].likeCount += 1;
+        const token = localStorage.getItem('token');
+        if (!token) {
+          this.showPopup = true;
+          this.afterLogin = () => {
+            this.like(videoId);
+          };
+        }else{
+          const res = await like(videoId);
+          if(res.code === 0) {
+            this.visibleVideos[this.currentIndex - this.start].likeCount += 1;
+          }
         }
+
       } catch (error) {
         console.error(error);
       }
@@ -197,12 +214,16 @@ export default {
       }, 500);
     },
     navigateTo(tab) {
+      const token = localStorage.getItem('token');
       if (tab === 'recommend') {
         this.page = 1;
         this.allVideos = [];
         this.visibleVideos = [];
         this.fetchVideos();
-      } else if (tab === 'my') {
+      } else if (tab === 'my' && !token) {
+        this.showPopup = true;
+        this.afterLogin = () => this.navigateTo(tab);
+      } else {
         router.push('/my-videos');
       }
     },

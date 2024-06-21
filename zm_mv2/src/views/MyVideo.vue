@@ -38,10 +38,11 @@ export default {
       // 从服务器获取视频数据
       try{
         const res = await mylist(this.page, 10);
-        if(res.status === 0){
-          this.videos = res.data;
+        console.log(res)
+        if(res.data.code === 0){
+          this.videos = res.data.data.list;
         }else{
-          console.error(res.message);
+          console.error(res.data.msg);
         }
       }catch (e) {
         console.error(e);
@@ -54,6 +55,7 @@ export default {
 
 <style scoped>
 .my-video {
+  height: 100vh;
   position: relative;
 }
 .top-nav {
