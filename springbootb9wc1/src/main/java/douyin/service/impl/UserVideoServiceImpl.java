@@ -13,6 +13,15 @@ public class UserVideoServiceImpl implements UserVideoService {
 
     @Override
     public void addWatchRecord(UserVideoEntity userVideoEntity) {
-        userVideoDao.insert(userVideoEntity);
+        UserVideoEntity userVideoEntity1 = userVideoDao.findByUserIdAndVideoId(userVideoEntity.getUserId(), userVideoEntity.getVideoId());
+
+        if (userVideoEntity1 != null) {
+            userVideoEntity1.setWatchTime(userVideoEntity.getWatchTime());
+            userVideoDao.updateById(userVideoEntity1);
+        }else{
+            userVideoDao.insert(userVideoEntity);
+        }
+
+
     }
 }

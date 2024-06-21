@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserVideoDao extends BaseMapper<UserVideoEntity> {
 
+    UserVideoEntity findByUserIdAndVideoId(Long userId, Long videoId);
 }
