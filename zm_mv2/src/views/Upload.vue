@@ -27,6 +27,7 @@
 <script setup>
 import router from '../router';
 import { ref, reactive } from 'vue';
+import {upload} from "@request/api";
 
 document.body.style.backgroundColor = '#000000';
 
@@ -39,10 +40,7 @@ const introduction = ref('');
 const navigateTo = (tab) => {
   const token = localStorage.getItem('token');
   if (tab === 'recommend') {
-    this.page = 1;
-    this.allVideos = [];
-    this.visibleVideos = [];
-    this.fetchVideos();
+    router.push('/');
   } else if (tab === 'my' && !token) {
     this.showPopup = true;
     this.afterLogin = () => this.navigateTo(tab);
@@ -76,11 +74,20 @@ const submitUpload = async () => {
   formData.append('cover', coverFile.value);
   formData.append('introduction', introduction.value);
 
-  // 模拟上传过程，实际应替换为适当的 API 调用
-  console.log('开始上传...');
-  await new Promise(resolve => setTimeout(resolve, 2000)); // 模拟上传时间
-  console.log('上传完成');
-  alert('视频上传成功!');
+  try {
+    const res = await upload(formData);
+    console.log(res);
+    if (res.data.code === 0) {
+      alert('上传成功');
+      router.push('/my-videos');
+    } else {
+      alert('上传失败');
+    }
+  } catch (e) {
+    console.error(e);
+    alert('上传失败');
+  }
+
 };
 </script>
 
@@ -148,6 +155,7 @@ input[type="file"], input[type="text"] {
   width: 66%;
   background-color: transparent;
   border: none;
+  color: #f4f4f4;
 }
 
 .confirm{

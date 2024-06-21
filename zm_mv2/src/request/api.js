@@ -63,3 +63,13 @@ export const recordVideoWatch = (videoId) => service.post(
     {
     }
 );
+
+export const upload = (formData) => service.post(
+    '/springbootb9wc1/videoinfo/add',
+    formData,
+    {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }
+    );
