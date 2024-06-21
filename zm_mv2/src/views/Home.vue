@@ -262,13 +262,8 @@ export default {
       } else if (tab === 'my' && !token) {
         this.showPopup = true;
         this.afterLogin = () => this.navigateTo(tab);
-      } else if (tab === 'my' && token) {
-        router.push('/my-videos');
-      }else if (tab === 'upload' && !token) {
-        this.showPopup = true;
-        this.afterLogin = () => this.navigateTo(tab);
       } else {
-        router.push('/upload');
+        router.push('/my-videos');
       }
     },
   }

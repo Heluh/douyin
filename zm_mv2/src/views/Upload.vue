@@ -1,10 +1,5 @@
 <template>
   <div class = "upload">
-    <div class="top-nav">
-      <button class="nav-button1" @click="navigateTo('recommend')">推荐</button>
-      <button class="nav-button2" @click="navigateTo('upload')">+</button>
-      <button class="nav-button3" @click="navigateTo('my')">我的</button>
-    </div>
     <div>
       <div class="content">
         <video v-if="videoPreview" controls class="video-preview" :src="videoPreview"></video>
@@ -93,48 +88,7 @@ const submitUpload = async () => {
 
 <style scoped>
 .upload {
-
   position: relative;
-}
-.top-nav {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: 50px;
-  background-color: transparent;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 999;
-}
-.nav-button1 {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  color: #ffffff;
-  cursor: pointer;
-  font-weight: bold;
-  margin-left: 40px;
-  margin-right: -40px;
-}
-.nav-button2 {
-  background: transparent;
-  border-radius: 4px;
-  border: 2px solid #eff5ef;
-  font-size: 20px;
-  color: #ffffff;
-  cursor: pointer;
-  font-weight: bold;
-}
-.nav-button3 {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  color: #ffffff;
-  cursor: pointer;
-  font-weight: bold;
-  margin-left: -40px;
-  margin-right: 40px;
 }
 
 .content {
