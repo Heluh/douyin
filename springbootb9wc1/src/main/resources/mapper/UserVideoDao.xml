@@ -2,5 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="douyin.dao.UserVideoDao">
-
+    <select id="findByUserIdAndVideoId" resultType="douyin.entity.UserVideoEntity">
+        SELECT * FROM user_video WHERE user_id = #{userId} AND video_id = #{videoId}
+    </select>
 </mapper>
