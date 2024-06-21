@@ -1,8 +1,9 @@
 <template>
   <div class="home">
     <div class="top-nav">
-      <button class="nav-button" @click="navigateTo('recommend')">推荐</button>
-      <button class="nav-button" @click="navigateTo('my')">我的</button>
+      <button class="nav-button1" @click="navigateTo('recommend')">推荐</button>
+      <button class="nav-button2" @click="navigateTo('')">+</button>
+      <button class="nav-button3" @click="navigateTo('my')">我的</button>
     </div>
     <van-swipe
         style="height: 100vh"
@@ -246,7 +247,24 @@ export default {
   width: 100%;
   z-index: 999;
 }
-.nav-button {
+.nav-button1 {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: bold;
+}
+.nav-button2 {
+  background: transparent;
+  border-radius: 4px;
+  border: 2px solid #eff5ef;
+  font-size: 20px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: bold;
+}
+.nav-button3 {
   background: transparent;
   border: none;
   font-size: 20px;
