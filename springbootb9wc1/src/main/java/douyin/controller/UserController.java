@@ -92,10 +92,11 @@ public class UserController {
 	}
 
 	/**
-	 * 获取用户的session用户信息
+	 * 获取当前用户的信息
 	 */
 	@GetMapping
-	public R getCurrUser(@LoginUser UserEntity user) {
+	public R getCurrUser(@LoginUser UserEntity user1) {
+		UserEntity user = userService.getById(user1.getId());
 		return R.ok().put("data", user);
 	}
 
