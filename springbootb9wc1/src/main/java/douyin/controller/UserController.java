@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 
+import douyin.annotation.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -93,10 +94,8 @@ public class UserController {
 	/**
 	 * 获取用户的session用户信息
 	 */
-	@RequestMapping("/session")
-	public R getCurrUser(HttpServletRequest request) {
-		Long id = (Long) request.getSession().getAttribute("userId");
-		UserEntity user = userService.getById(id);
+	@GetMapping
+	public R getCurrUser(@LoginUser UserEntity user) {
 		return R.ok().put("data", user);
 	}
 

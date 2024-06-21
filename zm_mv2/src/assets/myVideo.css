@@ -131,7 +131,11 @@
 }
 /** 隐藏倍速 */
 .vjs-custom-skin > .video-js .vjs-control-bar .vjs-playback-rate {
-  display: none;
+  position: absolute;
+  right: 120px;
+  bottom: 35px;
+  width: 20px;
+  height: 20px;
 }
 /** 音量按钮 */
 .video-js .vjs-volume-panel {
@@ -154,6 +158,18 @@
 }
 .video-js .vjs-volume-level {
   left: -21px;
+}
+
+.video-player{
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+.rotate{
+  transform:rotate(90deg);
 }
 
 
