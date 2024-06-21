@@ -73,3 +73,15 @@ export const upload = (formData) => service.post(
         }
     }
     );
+
+export const updateUser = (name, sex, phone) => service.post(
+    `/springbootb9wc1/user/update`,
+    null,
+    {
+        params: {
+            name: name,
+            sex: sex,
+            phone: phone
+        }
+    }
+);
