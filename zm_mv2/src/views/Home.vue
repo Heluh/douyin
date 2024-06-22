@@ -33,6 +33,7 @@
           </div>
           <div class="pl" @click="openPl(video.id)">
             <van-icon class="chat" name="chat" size="30" style="margin-top: 10px"/>
+              <span>2</span>
           </div>
         </div>
       </van-swipe-item>
@@ -45,7 +46,8 @@
               position="bottom"
               class="login_popup"
       >
-          <CommentSection v-if="showPopup"/>
+          <Login v-if="needLogin" @login-success="handleLoginSuccess"/>
+          <CommentSection v-else @login-required="handleLoginRequest"/>
       </van-popup>
   </div>
 </template>
@@ -79,6 +81,7 @@ export default {
       showPopup: false,
       plist: [],
       loading: false,
+      needLogin: false,
       page: 1,
       initialSwipe: 0,
       afterLogin: null,
@@ -231,10 +234,16 @@ export default {
     },
 
     //打开评论
-    openPl(videoId) {
-      this.showPopup = true;
-      // this.loadComments(videoId);
-    },
+      openPl(videoId) {
+          this.showPopup = true;
+      },
+        handleLoginRequest() {
+          this.needLogin = true;
+          this.showPopup = true
+      },
+      handleLoginSuccess() {
+          this.needLogin = false;
+      },
     async loadComments(videoId) {
       try {
         const res = await pl(videoId, this.page);

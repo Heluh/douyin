@@ -1,11 +1,12 @@
 <template>
   <div class="login">
-    <p class="title">登录</p>
+    <h2 class="title">登录</h2>
     <van-image
         round
-        width="6rem"
+        width="6.5rem"
         height="6rem"
         src="https://img01.yzcdn.cn/vant/cat.jpeg"
+        style="margin-bottom: 10px"
     />
     <van-form>
       <van-field
@@ -71,15 +72,19 @@ export default {
       try {
         const response = await login(this.username, this.password);
         console.log('Response:', response); // 调试用，查看 response 对象
-        console.log(response.data.code);
+        console.log(response.data);
         if (response.data.code === 0) {
             Toast.success('登录成功');
-            const token = response.data.token;
+            console.log(response.data.data.token);
+            const token = response.data.data.token;
+            // 将当前用户信息存入localstroge
+            const curUser = JSON.stringify(response.data.data.user);
             // 保存 token 到本地存储或状态管理
             localStorage.setItem('token', token);
+            localStorage.setItem('curUser', curUser);
             this.$emit('login-success');  // 触发 login-success 事件
         } else{
-          Toast.fail(response.data.msg || '登录失败');
+          Toast.fail(response.data.data.msg || '登录失败');
         }
       } catch (error) {
         Toast.fail('登录失败');
@@ -100,8 +105,8 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background-color: #f5f5f5;
+  height: 100%;
+  background-color: #ffffff;
 }
 
 .reg {
@@ -131,8 +136,7 @@ export default {
 .title {
   height: 50px;
   line-height: 50px;
-  background-color: #20a0ff;
-  color: #fff;
+  color: #0e0000;
   text-align: center;
 }
 

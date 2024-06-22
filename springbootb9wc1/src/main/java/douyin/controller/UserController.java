@@ -1,10 +1,7 @@
 package douyin.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,7 +54,11 @@ public class UserController {
 
 		String token = JwtUtil.generateToken(user.getId(), username, "users", "用户");
 		redisUtil.set(token, user.getId(), 1, TimeUnit.HOURS);
-		return R.ok().put("token", token);
+		Map<String, Object> map = new HashMap<>();
+		map.put("token", token);
+		map.put("user", user);
+		return R.ok().put("data", map);
+
 	}
 
 	/**
