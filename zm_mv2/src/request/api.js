@@ -99,3 +99,14 @@ export const updateUser = (name, sex, phone) => service.post(
         }
     }
 );
+
+export const updatePwd = (oldPassword,newPassword) => service.post(
+    '/springbootb9wc1/user/updatePass',
+    null,
+    {
+        params:{
+            oldPass: oldPassword,
+            newPass: newPassword
+        }
+    }
+)

@@ -45,6 +45,11 @@ const routes = [
     component: VideoPlayer,
     props: true,
   },
+  {
+    path: '/user/editPwd',
+    name: 'EditPassword',
+    component:()=> import('@/components/EditPassword.vue')
+  }
 ]
 
 const router = new VueRouter({
