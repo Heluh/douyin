@@ -1,11 +1,12 @@
 <template>
   <div class="login">
-    <p class="title">登录</p>
+    <h2 class="title">登录</h2>
     <van-image
         round
-        width="6rem"
+        width="6.5rem"
         height="6rem"
         src="https://img01.yzcdn.cn/vant/cat.jpeg"
+        style="margin-bottom: 10px"
     />
     <van-form>
       <van-field
@@ -135,8 +136,7 @@ export default {
 .title {
   height: 50px;
   line-height: 50px;
-  background-color: #20a0ff;
-  color: #fff;
+  color: #0e0000;
   text-align: center;
 }
 
