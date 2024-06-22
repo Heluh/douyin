@@ -32,15 +32,17 @@
         <div @click="changeTab('favorites')" :class="{ 'active': activeTab === 'favorites' }">收藏</div>
         <div @click="changeTab('likes')" :class="{ 'active': activeTab === 'likes' }">喜欢</div>
       </div>
-
+      <button @click="toggleDeleteMode" class="delete-mode-button">删除模式</button>
       <div class="my-works" v-if="activeTab === 'works'">
         <!-- 作品内容 -->
         <div class="content">
-          <div v-for="(item, index) in user.works" :key="item.id" class="item" @click="goToVideo(index)">            <img :src="item.cover" alt="work" />
+          <div v-for="(item, index) in user.works" :key="item.id" class="item" @click="goToVideo(index)">
+            <img :src="item.cover" alt="work" />
             <span class="like_count">
               <van-icon class="like" name="like" size="20" />
               <span class="like-number">{{ item.likeCount }}</span>
             </span>
+            <button v-if="deleteMode" @click.stop="deleteWork(index)" class="delete-button">删除</button>
           </div>
           <div class="pagination">
             <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
@@ -81,9 +83,8 @@
     </transition>
   </div>
 </template>
-
 <script>
-import { myinfo, mylist } from '@request/api';
+import { myinfo, mylist, deleteWorkById } from '@request/api';
 
 export default {
   name: 'Mine',
@@ -104,6 +105,7 @@ export default {
       },
       settingsMenuVisible: false,
       activeTab: 'works', // 默认选中的选项卡
+      deleteMode: false, // 删除模式开关
     };
   },
   async created() {
@@ -193,8 +195,19 @@ export default {
       localStorage.removeItem('token');
       this.$router.push('/');
     },
+    toggleDeleteMode() {
+      this.deleteMode = !this.deleteMode;
+    },
+    async deleteWork(index) {
+      const workId = this.user.works[index].id;
+      try {
+        await deleteWorkById(workId);
+        this.user.works.splice(index, 1); // 移除被删除的作品
+      } catch (error) {
+        console.error('Error deleting work:', error);
+      }
+    }
   },
-
 };
 </script>
 
@@ -445,5 +458,29 @@ export default {
 }
 
 
+.delete-mode-button {
+  margin: 16px;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 4px;
+}
 
+.delete-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #d32f2f;
+}
 </style>

@@ -24,6 +24,10 @@ export const myinfo = () => service.get(
   '/springbootb9wc1/user'
 );
 
+export const deleteWorkById = (id) => service.delete(
+  `/springbootb9wc1/videoinfo/delete/${id}`
+);
+
 export const like = (v2) => service.post(
   `/springbootb9wc1/videoinfo/like/${v2}`
 );

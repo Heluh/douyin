@@ -7,6 +7,7 @@
         :show-indicators="false"
         :loop="false"
         ref="swipe"
+        :initial-swipe="initialSwipe"
     >
       <van-swipe-item v-for="(video, index) in videoList" :key="index" :data-index="index">
         <div class="main">
@@ -45,6 +46,7 @@ export default {
   },
   data() {
     return {
+      initialSwipe: 0,
       currentIndex: 0,
       videoList: [],
       playerOptions: [],
@@ -90,24 +92,8 @@ export default {
       }));
     },
     initializeSwiper() {
-      this.$nextTick(() => {
-        if (this.$refs.swipe && this.$refs.swipe.swiper) {
-          this.$refs.swipe.swiper.on('init', () => {
-            this.ensureSwiperInstance();
-          });
-          this.$refs.swipe.swiper.init();
-        } else {
-          setTimeout(this.initializeSwiper, 100);
-        }
-      });
-    },
-    ensureSwiperInstance() {
-      if (this.$refs.swipe && this.$refs.swipe.swiper) {
-        this.$refs.swipe.swiper.slideTo(this.currentIndex);
-        this.playCurrentVideo();
-      } else {
-        setTimeout(this.ensureSwiperInstance, 100);
-      }
+      console.log(this.currentIndex)
+      this.initialSwipe = this.currentIndex;
     },
     onChange(index) {
       this.currentIndex = index;
