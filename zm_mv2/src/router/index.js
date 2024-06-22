@@ -21,7 +21,7 @@ const routes = [
   {
     path: '/mine',
     name: 'Mine',
-    component:()=> import('@/components/Mine.vue')
+    component:()=> import('@views/Mine.vue')
   },
   {
     path: '/Upload',

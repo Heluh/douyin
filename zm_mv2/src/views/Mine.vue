@@ -1,6 +1,8 @@
 <template>
   <div class="mine">
+    <!-- 头部信息和设置菜单 -->
     <div class="header">
+      <!-- 头像和用户信息 -->
       <div class="avatar">
         <img :src="user.avatar || 'https://img01.yzcdn.cn/vant/cat.jpeg'" alt="avatar" />
       </div>
@@ -10,36 +12,78 @@
         <p>姓名：{{ user.name }}</p>
       </div>
     </div>
+
+    <!-- 用户详情信息 -->
     <div class="details">
       <p>电话: {{ user.phone || '点击添加手机号...' }}</p>
       <p>性别：{{ user.sex }}</p>
       <div class="settings" @click="toggleSettingsMenu">
-        <img src="@/assets/设置.png" alt="settings" />
+        <img src="../assets/设置.png" alt="settings" />
       </div>
     </div>
+
+    <!-- 我的作品和视频部分 -->
     <div class="works">
+      <!-- 选项卡 -->
       <div class="tab">
-        <div>作品</div>
-        <div>私密</div>
-        <div>推荐</div>
-        <div>收藏</div>
-        <div>喜欢</div>
+        <div @click="changeTab('works')" :class="{ 'active': activeTab === 'works' }">作品</div>
+        <div @click="changeTab('private')" :class="{ 'active': activeTab === 'private' }">私密</div>
+        <div @click="changeTab('recommend')" :class="{ 'active': activeTab === 'recommend' }">推荐</div>
+        <div @click="changeTab('favorites')" :class="{ 'active': activeTab === 'favorites' }">收藏</div>
+        <div @click="changeTab('likes')" :class="{ 'active': activeTab === 'likes' }">喜欢</div>
       </div>
+
+      <!-- 作品内容 -->
+      <div class="content" v-if="activeTab === 'works'">
+        <div v-for="item in user.works" :key="item.id" class="item">
+          <img :src="item.image" alt="work" />
+          <span>{{ item.views }}</span>
+        </div>
+      </div>
+
+      <!-- 私密内容 -->
+      <div class="content" v-else-if="activeTab === 'private'">
+        <p>这里是私密内容</p>
+      </div>
+
+      <!-- 推荐内容 -->
+      <div class="content" v-else-if="activeTab === 'recommend'">
+        <p>这里是推荐内容</p>
+      </div>
+
+      <!-- 收藏内容 -->
+      <div class="content" v-else-if="activeTab === 'favorites'">
+        <p>这里是收藏内容</p>
+      </div>
+
+      <!-- 喜欢内容 -->
+      <div class="content" v-else-if="activeTab === 'likes'">
+        <p>这里是喜欢内容</p>
+      </div>
+
+
+      <!-- 作品内容 -->
       <div class="content">
         <div v-for="item in user.works" :key="item.id" class="item">
           <img :src="item.image" alt="work" />
           <span>{{ item.views }}</span>
         </div>
       </div>
+
+      <!-- 我的视频部分 -->
+      <div class="videos">
+        <h3>我的视频</h3>
+        <div class="grid">
+          <div v-for="video in user.videos" :key="video.id" class="video-item">
+            <video :src="video.src" controls></video>
+            <p>{{ video.title }}</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="footer">
-      <div @click="backToHome">首页</div>
-      <div>朋友</div>
-      <div @click="triggerFileUpload">+</div>
-      <div>消息</div>
-      <div>我</div>
-      <input type="file" ref="fileInput" style="display: none;" @change="handleFileUpload" accept="video/*"/>
-    </div>
+
+
+    <!-- 设置菜单过渡效果 -->
     <transition name="slide">
       <div class="settings-menu" v-if="settingsMenuVisible">
         <div class="close-btn" @click="toggleSettingsMenu">×</div>
@@ -66,8 +110,15 @@ export default {
         phone: '',
         addtime: '',
         works: [],
+        videos: [
+          { id: 1, title: "视频1", src: "http://vjs.zencdn.net/v/oceans.mp4" },
+          { id: 2, title: "视频2", src: "https://media.w3.org/2010/05/sintel/trailer.mp4" },
+          { id: 3, title: "视频3", src: "http://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-480p.mp4" },
+          { id: 4, title: "视频4", src: "https://media.w3.org/2010/05/sintel/trailer.mp4" }
+        ],
       },
       settingsMenuVisible: false,
+      activeTab: 'works', // 默认选中的选项卡
     };
   },
   async created() {
@@ -85,6 +136,11 @@ export default {
     }
   },
   methods: {
+    // 切换选项卡
+    changeTab(tabName) {
+      this.activeTab = tabName;
+    },
+
     toggleSettingsMenu() {
       this.settingsMenuVisible = !this.settingsMenuVisible;
     },
@@ -320,10 +376,20 @@ export default {
 .slide-enter, .slide-leave-to {
   transform: translateX(100%);
 }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.video-item {
+  text-align: center;
+}
+
+.video-item video {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+}
 </style>
-
-
-
-
-
-
