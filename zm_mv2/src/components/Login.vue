@@ -71,15 +71,19 @@ export default {
       try {
         const response = await login(this.username, this.password);
         console.log('Response:', response); // 调试用，查看 response 对象
-        console.log(response.data.code);
+        console.log(response.data);
         if (response.data.code === 0) {
             Toast.success('登录成功');
-            const token = response.data.token;
+            console.log(response.data.data.token);
+            const token = response.data.data.token;
+            // 将当前用户信息存入localstroge
+            const curUser = JSON.stringify(response.data.data.user);
             // 保存 token 到本地存储或状态管理
             localStorage.setItem('token', token);
+            localStorage.setItem('curUser', curUser);
             this.$emit('login-success');  // 触发 login-success 事件
         } else{
-          Toast.fail(response.data.msg || '登录失败');
+          Toast.fail(response.data.data.msg || '登录失败');
         }
       } catch (error) {
         Toast.fail('登录失败');
