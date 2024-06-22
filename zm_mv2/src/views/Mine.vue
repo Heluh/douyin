@@ -189,6 +189,7 @@ export default {
 
     changePassword() {
       console.log('Change password clicked');
+      this.$router.push('/user/editPwd')
     },
 
     logout() {
