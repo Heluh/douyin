@@ -1,7 +1,9 @@
 <template>
     <div class="comment-section">
         <h2 style="text-align: center">评论区</h2>
+        <!-- 只有在用户登录时才显示评论输入框 -->
         <van-field
+            v-if="isUserLoggedIn"
             v-model="commentContent"
             placeholder="发表评论..."
             right-icon="checked"
@@ -16,19 +18,24 @@
             <div v-for="comment in comments" :key="comment.id" class="comment-item">
                 <div class="comment-user">@{{ comment.username }}</div>
                 <div class="comment-content">{{ comment.content }}</div>
+                <van-button v-if="comment.username === currentUser && isUserLoggedIn" @click="deleteComment(comment.id)" type="danger" size="mini">删除</van-button>
             </div>
+        </div>
+        <!-- 如果未登录，显示提示登录信息 -->
+        <div v-if="!isUserLoggedIn" class="login-prompt">
+            您需要<a href="#" @click="promptLogin">登录</a>才能发表评论。
         </div>
     </div>
 </template>
 
 <script>
-import { Field, Icon } from 'vant';
+import { Field, Button } from 'vant';
 
 export default {
     name: 'CommentSection',
     components: {
         vanField: Field,
-        vanIcon: Icon
+        vanButton: Button
     },
     data() {
         return {
@@ -37,6 +44,8 @@ export default {
                 { id: 1, username: '用户1', content: '这是一条评论！' },
                 { id: 2, username: '用户2', content: '很棒的视频！' }
             ],
+            currentUser: localStorage.getItem('curUser') || '',
+            isUserLoggedIn: !!localStorage.getItem('token')
         };
     },
     methods: {
@@ -44,12 +53,18 @@ export default {
             if (!this.commentContent.trim()) return;
             const newComment = {
                 id: this.comments.length + 1,
-                username: '新用户',
+                username: this.currentUser,
                 content: this.commentContent,
             };
             this.comments.push(newComment);
             this.commentContent = ''; // 清空输入框
         },
+        deleteComment(commentId) {
+            this.comments = this.comments.filter(comment => comment.id !== commentId);
+        },
+        promptLogin() {
+            this.$emit('login-required'); // 触发登录要求事件
+        }
     },
 };
 </script>
@@ -80,5 +95,9 @@ export default {
 }
 .comment-content {
     margin-top: 5px;
+}
+.login-prompt {
+    text-align: center;
+    margin-top: 10px;
 }
 </style>
