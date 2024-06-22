@@ -11,9 +11,11 @@
 	</select>
 
 
-	<select id="selectListView" resultType="douyin.entity.view.CommentView">
-		SELECT ... FROM comment ${ew.customSqlSegment}
-				LIMIT #{page.offset}, #{page.size}
+	<select id="selectListEntity" resultType="douyin.entity.view.CommentView">
+		SELECT * FROM comment
+		<if test="ew!=null and ''!=ew">
+			${ew.customSqlSegment}
+		</if>
 	</select>
 
 	<select id="selectView" resultType="douyin.entity.view.CommentView">

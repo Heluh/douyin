@@ -31,8 +31,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentDao, CommentEntity> i
 
 	@Override
 	public PageUtils queryPage(Map<String, Object> params, Wrapper<CommentEntity> wrapper) {
-		Page<CommentView> page = new Query<CommentView>(params).getPage();
-		page.setRecords(baseMapper.selectListView(page, wrapper));
+		Page<CommentEntity> page = new Query<CommentEntity>(params).getPage();
+		page.setRecords(baseMapper.selectListEntity(page, wrapper));
 		return new PageUtils(page);
 	}
 

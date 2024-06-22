@@ -37,12 +37,22 @@ export const islike = (v2) => service.get(
   `/springbootb9wc1/videoinfo/islike/${v2}`
 );
 
-export const pl = (v3, v4) => service.get(
-  'springbootb9wc1/comment/mv',
+export const pl = (v3, v4, v5) => service.get(
+  'springbootb9wc1/comment/list',
   {
   params: {
-    id: v3,
-    limit: v4
+    page: v3,
+    limit: v4,
+    videoId: v5
+  }
+});
+
+//评论数量
+export const plcount = (v6) => service.get(
+  'springbootb9wc1/comment/count',
+  {
+  params: {
+    videoId: v6
   }
 });
 

@@ -29,7 +29,7 @@ public interface CommentDao extends BaseMapper<CommentEntity> {
 
     List<CommentView> selectListView(@Param("ew") Wrapper<CommentEntity> wrapper);
 
-    List<CommentView> selectListView(Page<CommentView> page, @Param("ew") Wrapper<CommentEntity> wrapper);
+    List<CommentEntity> selectListEntity(Page<CommentEntity> page, @Param("ew") Wrapper<CommentEntity> wrapper);
 
     CommentView selectView(@Param("ew") Wrapper<CommentEntity> wrapper);
 }

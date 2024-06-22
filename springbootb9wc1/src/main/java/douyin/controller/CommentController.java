@@ -1,6 +1,7 @@
 package douyin.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
@@ -9,11 +10,7 @@ import douyin.entity.view.CommentView;
 import douyin.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import douyin.entity.CommentEntity;
@@ -33,15 +30,29 @@ public class CommentController {
     private CommentService commentService;
 
     /**
-     * 前端列表
+     * 列表
      */
     @IgnoreAuth
-    @RequestMapping("/list")
-    public R list(@RequestParam Map<String, Object> params, CommentEntity comment,
-                  HttpServletRequest request) {
+    @GetMapping("/list")
+    public R list(@RequestParam Map<String, Object> params,
+                  CommentEntity comment,
+                  @RequestParam Long videoId) {
         QueryWrapper<CommentEntity> qw = new QueryWrapper<>();
+        qw.eq("refid", videoId);
         PageUtils page = commentService.queryPage(params, MPUtil.sort(MPUtil.between(MPUtil.likeOrEq(qw, comment), params), params));
         return R.ok().put("data", page);
+    }
+
+    /**
+     * 返回评论数量
+     */
+    @IgnoreAuth
+    @GetMapping("/count")
+    public R count(@RequestParam Long videoId) {
+        QueryWrapper<CommentEntity> qw = new QueryWrapper<>();
+        qw.eq("refid", videoId);
+        List<CommentEntity> list = commentService.list(qw);
+        return R.ok().put("data", list.size());
     }
 
     /**
@@ -104,45 +115,5 @@ public class CommentController {
         commentService.removeByIds(Arrays.asList(ids));
         return R.ok();
     }
-//
-//    /**
-//     * 提醒接口
-//     */
-//    @RequestMapping("/remind/{columnName}/{type}")
-//    public R remindCount(@PathVariable("columnName") String columnName, HttpServletRequest request,
-//                         @PathVariable("type") String type, @RequestParam Map<String, Object> map) {
-//        map.put("column", columnName);
-//        map.put("type", type);
-//
-//        if (type.equals("2")) {
-//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//            Calendar c = Calendar.getInstance();
-//            Date remindStartDate = null;
-//            Date remindEndDate = null;
-//            if (map.get("remindstart") != null) {
-//                Integer remindStart = Integer.parseInt(map.get("remindstart").toString());
-//                c.setTime(new Date());
-//                c.add(Calendar.DAY_OF_MONTH, remindStart);
-//                remindStartDate = c.getTime();
-//                map.put("remindstart", sdf.format(remindStartDate));
-//            }
-//            if (map.get("remindend") != null) {
-//                Integer remindEnd = Integer.parseInt(map.get("remindend").toString());
-//                c.setTime(new Date());
-//                c.add(Calendar.DAY_OF_MONTH, remindEnd);
-//                remindEndDate = c.getTime();
-//                map.put("remindend", sdf.format(remindEndDate));
-//            }
-//        }
-//
-//        QueryWrapper<CommentEntity> wrapper = new QueryWrapper<>();
-//        if (map.get("remindstart") != null) {
-//            wrapper.ge(columnName, map.get("remindstart"));
-//        }
-//        if (map.get("remindend") != null) {
-//            wrapper.le(columnName, map.get("remindend"));
-//        }
-//        int count = commentService.count(wrapper);
-//        return R.ok().put("count", count);
-//    }
+
 }

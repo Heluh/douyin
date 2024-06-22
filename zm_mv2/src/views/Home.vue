@@ -33,7 +33,7 @@
           </div>
           <div class="pl" @click="openPl(video.id)">
             <van-icon class="chat" name="chat" size="30" style="margin-top: 10px"/>
-              <span>2</span>
+              <span>{{ video.plCount }}</span>
           </div>
         </div>
       </van-swipe-item>
@@ -46,17 +46,26 @@
               position="bottom"
               class="login_popup"
       >
-          <Login v-if="needLogin" @login-success="handleLoginSuccess"/>
-          <CommentSection v-else @login-required="handleLoginRequest"/>
+          <CommentSection ref="commentSection" :videoId="currentVideoId" @login-required="handleLoginRequest" />
       </van-popup>
+    <van-popup
+        v-model="showLogin"
+        closeable
+        close-icon="cross"
+        close-icon-position="top-left"
+        position="bottom"
+        class="login_popup"
+    >
+      <Login @login-success="handleLoginSuccess"/>
+    </van-popup>
   </div>
 </template>
 
 <script>
-import {islike, like, list, pl, recordVideoWatch} from "@request/api";
+import {islike, like, list, pl, plcount, recordVideoWatch} from "@request/api";
 import "../video/index";
 import { videoPlayer } from "vue-video-player";
-import {Popup} from "vant";
+import { Popup } from "vant";
 import Login from "@components/Login.vue";
 import Register from "@components/Register.vue";
 import router from '../router';
@@ -67,9 +76,7 @@ export default {
     vanPopup: Popup,
     videoPlayer,
     Login,
-    // eslint-disable-next-line vue/no-unused-components
-    Register,
-    CommentSection
+    CommentSection,
   },
   name: "home",
   data() {
@@ -79,12 +86,13 @@ export default {
       currentIndex: 0, // 当前浏览的视频索引
       start: 0, // 当前加载的视频的起始索引
       showPopup: false,
+      showLogin: false,
       plist: [],
       loading: false,
-      needLogin: false,
       page: 1,
       initialSwipe: 0,
       afterLogin: null,
+      currentVideoId: null, // 当前打开评论的videoId
       playerOptions: {
         playbackRates: [0.5, 1.0, 1.5, 2.0], // 可选的播放速度
         autoplay: true,
@@ -114,12 +122,18 @@ export default {
       }
     });
   },
+  watch: {
+    showPopup(val) {
+      if (val) {
+        this.$refs.commentSection.fetchComments();
+      }
+    }
+  },
   computed: {
     player() {
       return this.$refs.videoPlayer.player;
     },
   },
-
   methods: {
     async fetchVideos() {
       try {
@@ -158,23 +172,33 @@ export default {
       this.initialSwipe = this.currentIndex - start;
       this.$refs.swipe.resize();
     },
-
     async onChange(index) {
       this.currentIndex = this.start + index;
-      // 判断用户是否已经点赞
       const videoId = this.visibleVideos[index].id;
-      const res = await islike(videoId);
-      if (res.data.code === 0) {
-        this.visibleVideos[index].liked = res.data.data;
-      } else {
-        console.error(res.data.msg);
-      }
 
       // 调用记录观看接口
       try {
-        const response = await recordVideoWatch(videoId);
-        if (response.data.code !== 0) {
-          console.error('Failed to record video watch:', response.data.msg);
+        const token = localStorage.getItem("token");
+
+        const res1 = await plcount(videoId)
+        if (res1.data.code === 0) {
+          this.visibleVideos[index].plCount = res1.data.data;
+        } else {
+          console.error(res1.data.msg);
+        }
+
+        if (token) {
+          // 判断用户是否已经点赞
+          const res = await islike(videoId);
+          if (res.data.code === 0) {
+            this.visibleVideos[index].liked = res.data.data;
+          } else {
+            console.error(res.data.msg);
+          }
+          const response = await recordVideoWatch(videoId);
+          if (response.data.code !== 0) {
+            console.error('Failed to record video watch:', response.data.msg);
+          }
         }
       } catch (error) {
         console.error('Error recording video watch:', error);
@@ -192,11 +216,9 @@ export default {
 
       this.updateVisibleVideos();
     },
-
     pauseVideo() {
       this.player.pause();
     },
-
     onLoginSuccess() {
       this.showPopup = false; // 隐藏登录页面
       if (this.afterLogin) {
@@ -204,46 +226,43 @@ export default {
         this.afterLogin = null;
       }
     },
-
     //点赞
     async like(videoId) {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          this.showPopup = true;
+          this.showLogin = true;
           this.afterLogin = () => {
             this.like(videoId);
           };
-        }else{
+        } else {
           const res = await like(videoId);
-          console.log(this.visibleVideos[this.currentIndex - this.start])
-          if(res.data.code === 0) {
-            if(this.visibleVideos[this.currentIndex - this.start].liked === false){
+          console.log(this.visibleVideos[this.currentIndex - this.start]);
+          if (res.data.code === 0) {
+            if (this.visibleVideos[this.currentIndex - this.start].liked === false) {
               this.visibleVideos[this.currentIndex - this.start].likeCount += 1;
               this.visibleVideos[this.currentIndex - this.start].liked = true;
-            }else{
+            } else {
               this.visibleVideos[this.currentIndex - this.start].likeCount -= 1;
               this.visibleVideos[this.currentIndex - this.start].liked = false;
             }
           }
         }
-
       } catch (error) {
         console.error(error);
       }
     },
-
     //打开评论
-      openPl(videoId) {
-          this.showPopup = true;
-      },
-        handleLoginRequest() {
-          this.needLogin = true;
-          this.showPopup = true
-      },
-      handleLoginSuccess() {
-          this.needLogin = false;
-      },
+    openPl(videoId) {
+      this.currentVideoId = videoId;
+      this.showPopup = true;
+    },
+    handleLoginRequest() {
+      this.showLogin = true;
+    },
+    handleLoginSuccess() {
+      this.showLogin = false;
+    },
     async loadComments(videoId) {
       try {
         const res = await pl(videoId, this.page);
@@ -276,9 +295,10 @@ export default {
         router.push('/my-videos');
       }
     },
-  }
+  },
 };
 </script>
+
 
 <style scoped>
 .home {

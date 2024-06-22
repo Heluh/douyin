@@ -9,7 +9,7 @@
           <input type="file" accept="video/*" @change="handleVideoFile" placeholder="上传视频文件">
         </div>
         <div class="part">
-          <div class="label">上传视频文件：</div>
+          <div class="label">上传视频封面：</div>
           <input type="file" accept="image/*" @change="handleCoverFile" placeholder="上传封面图片">
         </div>
         <input type="text" v-model="introduction" placeholder="输入视频简介">
