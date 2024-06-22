@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VideoPlayer from "@components/VideoPlayer.vue";
 Vue.use(VueRouter)
 
 const routes = [
@@ -37,7 +38,13 @@ const routes = [
     path: '/user/edit',
     name: 'editProfile',
     component:()=> import('@/components/EditProfile.vue')
-  }
+  },
+  {
+    path: '/video/:id',
+    name: 'VideoPlayer',
+    component: VideoPlayer,
+    props: true,
+  },
 ]
 
 const router = new VueRouter({

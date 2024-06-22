@@ -67,7 +67,8 @@ public class VideoController {
             // 获取用户已经看过的所有视频的 ID 列表
             List<Long> watchedVideoIds = userVideoService.getWatchedVideoIds(user.getId());
             // 在查询视频列表时排除这些 ID
-            wrapper.notIn("v.id", watchedVideoIds);
+            if(!watchedVideoIds.isEmpty())
+                wrapper.notIn("v.id", watchedVideoIds);
         }
 
         params.put("order", "desc");

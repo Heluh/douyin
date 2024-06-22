@@ -33,11 +33,20 @@
         <div @click="changeTab('likes')" :class="{ 'active': activeTab === 'likes' }">喜欢</div>
       </div>
 
-      <!-- 作品内容 -->
-      <div class="content" v-if="activeTab === 'works'">
-        <div v-for="item in user.works" :key="item.id" class="item">
-          <img :src="item.image" alt="work" />
-          <span>{{ item.views }}</span>
+      <div class="my-works" v-if="activeTab === 'works'">
+        <!-- 作品内容 -->
+        <div class="content">
+          <div v-for="(item, index) in user.works" :key="item.id" class="item" @click="goToVideo(index)">            <img :src="item.cover" alt="work" />
+            <span class="like_count">
+              <van-icon class="like" name="like" size="20" />
+              <span class="like-number">{{ item.likeCount }}</span>
+            </span>
+          </div>
+          <div class="pagination">
+            <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
+            <span>第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
+            <button @click="nextPage" :disabled="currentPage === totalPages">下一页</button>
+          </div>
         </div>
       </div>
 
@@ -60,28 +69,7 @@
       <div class="content" v-else-if="activeTab === 'likes'">
         <p>这里是喜欢内容</p>
       </div>
-
-
-      <!-- 作品内容 -->
-      <div class="content">
-        <div v-for="item in user.works" :key="item.id" class="item">
-          <img :src="item.image" alt="work" />
-          <span>{{ item.views }}</span>
-        </div>
-      </div>
-
-      <!-- 我的视频部分 -->
-      <div class="videos">
-        <h3>我的视频</h3>
-        <div class="grid">
-          <div v-for="video in user.videos" :key="video.id" class="video-item">
-            <video :src="video.src" controls></video>
-            <p>{{ video.title }}</p>
-          </div>
-        </div>
-      </div>
     </div>
-
 
     <!-- 设置菜单过渡效果 -->
     <transition name="slide">
@@ -95,12 +83,15 @@
 </template>
 
 <script>
-import { myinfo } from '@request/api';
+import { myinfo, mylist } from '@request/api';
 
 export default {
   name: 'Mine',
   data() {
     return {
+      pageSize: 9, // 每页显示的作品数量
+      currentPage: 1, // 当前页码
+      totalPages: 1, // 总页数
       user: {
         id: '',
         username: '',
@@ -110,12 +101,6 @@ export default {
         phone: '',
         addtime: '',
         works: [],
-        videos: [
-          { id: 1, title: "视频1", src: "http://vjs.zencdn.net/v/oceans.mp4" },
-          { id: 2, title: "视频2", src: "https://media.w3.org/2010/05/sintel/trailer.mp4" },
-          { id: 3, title: "视频3", src: "http://mirror.aarnet.edu.au/pub/TED-talks/911Mothers_2010W-480p.mp4" },
-          { id: 4, title: "视频4", src: "https://media.w3.org/2010/05/sintel/trailer.mp4" }
-        ],
       },
       settingsMenuVisible: false,
       activeTab: 'works', // 默认选中的选项卡
@@ -126,19 +111,60 @@ export default {
     if (token) {
       try {
         const response = await myinfo();
-        console.log(response.data);
         this.user = response.data.data; // 根据API返回的数据结构
+        // 默认选中作品选项卡并加载作品数据
+        await this.changeTab('works');
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     } else {
-      await this.$router.push({name: 'Login'});
+      await this.$router.push({ name: 'Login' });
     }
   },
+
   methods: {
     // 切换选项卡
-    changeTab(tabName) {
+    async changeTab(tabName) {
       this.activeTab = tabName;
+      if (tabName === 'works') {
+        await this.fetchWorks();
+      }
+    },
+
+    // 获取作品数据
+    async fetchWorks() {
+      try {
+        const worksResponse = await mylist(this.currentPage, this.pageSize);
+        this.$set(this.user, 'works', worksResponse.data.data.list); // 使用 Vue.set
+        this.totalPages = worksResponse.data.data.totalPage; // 计算总页数
+      } catch (error) {
+        console.error('Error fetching works data:', error);
+      }
+    },
+
+    // 分页按钮方法
+    async prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        await this.fetchWorks();
+      }
+    },
+    async nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        await this.fetchWorks();
+      }
+    },
+
+    goToVideo(index) {
+      this.$router.push({
+        name: 'VideoPlayer',
+        params: { id: String(this.user.works[index].id) },
+        query: {
+          videos: JSON.stringify(this.user.works),
+          currentIndex: index
+        }
+      });
     },
 
     toggleSettingsMenu() {
@@ -146,12 +172,10 @@ export default {
     },
     editUserInfo() {
       console.log('Edit user info clicked');
-      this.$router.push('/user/edit')
-      // 在这里处理修改用户信息的逻辑
+      this.$router.push('/user/edit');
     },
     changePassword() {
       console.log('Change password clicked');
-      // 在这里处理修改密码的逻辑
     },
     triggerFileUpload() {
       this.$refs.fileInput.click();
@@ -160,7 +184,6 @@ export default {
       const file = event.target.files[0];
       if (file) {
         console.log('Selected video file:', file);
-        // 在这里处理文件上传逻辑
       }
     },
     backToHome() {
@@ -171,6 +194,7 @@ export default {
       this.$router.push('/');
     },
   },
+
 };
 </script>
 
@@ -254,10 +278,11 @@ export default {
 
 .works {
   background-color: white;
-  padding: 16px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .tab {
@@ -277,16 +302,24 @@ export default {
 .tab div:hover {
   background-color: #f0f0f0;
 }
+.my-works {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
 .content {
   display: flex;
   flex-wrap: wrap;
-  margin-top: 16px;
+  justify-content: space-between;
+  padding: 16px;
+  flex-grow: 1;
 }
 
 .item {
-  width: calc(50% - 8px);
-  margin: 4px;
+  width: 33.33%; /* 每行三个，移除间距 */
+  margin: 0; /* 移除底部间距 */
+  box-sizing: border-box;
   position: relative;
 }
 
@@ -296,33 +329,33 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.item span {
+
+.like_count {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.footer {
+  bottom: 4px;
+  right: 10px;
+  color: #d32f2f;
   display: flex;
-  justify-content: space-around;
-  padding: 16px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  align-items: center;
 }
 
-.footer div {
-  cursor: pointer;
+.like-number {
+  position: absolute;
+  bottom: 4px;
+  right: 2px;
+  color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 8px;
+}
+
+
+.pagination {
+  display: flex;
+  justify-content: center;
   padding: 8px;
-  transition: background-color 0.3s ease;
-}
-
-.footer div:hover {
-  background-color: #f0f0f0;
+  background-color: white;
+  border-top: 1px solid #ccc;
 }
 
 .settings {
@@ -392,4 +425,25 @@ export default {
   max-width: 100%;
   height: auto;
 }
+
+.tab {
+   display: flex;
+   justify-content: space-around;
+   border-bottom: 1px solid #ccc;
+   padding-bottom: 8px;
+   font-weight: bold;
+}
+
+.tab div {
+  cursor: pointer;
+  padding: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.tab div.active {
+  background-color: #f0f0f0;
+}
+
+
+
 </style>
