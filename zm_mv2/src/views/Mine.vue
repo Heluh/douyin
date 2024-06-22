@@ -32,7 +32,11 @@
         <div @click="changeTab('favorites')" :class="{ 'active': activeTab === 'favorites' }">收藏</div>
         <div @click="changeTab('likes')" :class="{ 'active': activeTab === 'likes' }">喜欢</div>
       </div>
-      <button @click="toggleDeleteMode" class="delete-mode-button">删除模式</button>
+      <!-- 删除模式按钮 -->
+      <button @click="toggleDeleteMode" class="delete-mode-button">
+        <van-icon name="delete" size="20" />
+        删除模式
+      </button>
       <div class="my-works" v-if="activeTab === 'works'">
         <!-- 作品内容 -->
         <div class="content">
@@ -42,13 +46,13 @@
               <van-icon class="like" name="like" size="20" />
               <span class="like-number">{{ item.likeCount }}</span>
             </span>
-            <button v-if="deleteMode" @click.stop="deleteWork(index)" class="delete-button">删除</button>
+            <van-icon v-if="deleteMode" name="cross" @click.stop="deleteWork(index)" class="delete-button" />
           </div>
-          <div class="pagination">
-            <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
-            <span>第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
-            <button @click="nextPage" :disabled="currentPage === totalPages">下一页</button>
-          </div>
+        </div>
+        <div class="pagination">
+          <button @click="prevPage" :disabled="currentPage === 1">上一页</button>
+          <span>第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
+          <button @click="nextPage" :disabled="currentPage === totalPages">下一页</button>
         </div>
       </div>
 
@@ -83,11 +87,16 @@
     </transition>
   </div>
 </template>
+
 <script>
 import { myinfo, mylist, deleteWorkById } from '@request/api';
+import { Dialog } from 'vant';
 
 export default {
   name: 'Mine',
+  components: {
+    [Dialog.Component.name]: Dialog.Component,
+  },
   data() {
     return {
       pageSize: 9, // 每页显示的作品数量
@@ -172,41 +181,46 @@ export default {
     toggleSettingsMenu() {
       this.settingsMenuVisible = !this.settingsMenuVisible;
     },
+
     editUserInfo() {
       console.log('Edit user info clicked');
       this.$router.push('/user/edit');
     },
+
     changePassword() {
       console.log('Change password clicked');
     },
-    triggerFileUpload() {
-      this.$refs.fileInput.click();
-    },
-    handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        console.log('Selected video file:', file);
-      }
-    },
-    backToHome() {
-      this.$router.push('/');
-    },
+
     logout() {
       localStorage.removeItem('token');
       this.$router.push('/');
     },
+
     toggleDeleteMode() {
       this.deleteMode = !this.deleteMode;
     },
+
     async deleteWork(index) {
       const workId = this.user.works[index].id;
-      try {
-        await deleteWorkById(workId);
-        this.user.works.splice(index, 1); // 移除被删除的作品
-      } catch (error) {
-        console.error('Error deleting work:', error);
-      }
-    }
+      Dialog.confirm({
+        title: '确认删除',
+        message: '确定要删除这个作品吗？',
+      })
+          .then(async () => {
+            // 确认删除
+            try {
+              await deleteWorkById(workId);
+              this.user.works.splice(index, 1);
+              console.log('Work deleted successfully');
+            } catch (error) {
+              console.error('Error deleting work:', error);
+            }
+          })
+          .catch(() => {
+            // 取消删除
+            console.log('删除已取消');
+          });
+    },
   },
 };
 </script>
@@ -316,17 +330,16 @@ export default {
   background-color: #f0f0f0;
 }
 .my-works {
+  height: calc(100vh - 400px);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  position: relative;
 }
 
 .content {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
   padding: 16px;
-  flex-grow: 1;
 }
 
 .item {
@@ -364,11 +377,11 @@ export default {
 
 
 .pagination {
+  width: 100%;
+  position: absolute;
+  bottom: 20px;
   display: flex;
   justify-content: center;
-  padding: 8px;
-  background-color: white;
-  border-top: 1px solid #ccc;
 }
 
 .settings {
@@ -473,9 +486,8 @@ export default {
   right: 8px;
   background-color: #f44336;
   color: white;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 4px;
+  border-radius: 50%;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
