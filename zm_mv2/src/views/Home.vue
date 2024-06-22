@@ -1,9 +1,9 @@
 <template>
   <div class="home">
-    <div class="top-nav">
-      <button class="nav-button1" @click="navigateTo('recommend')">推荐</button>
-      <button class="nav-button3" @click="navigateTo('my')">我的</button>
-    </div>
+<!--    <div class="top-nav">-->
+<!--      <button class="nav-button1" @click="navigateTo('recommend')">推荐</button>-->
+<!--      <button class="nav-button3" @click="navigateTo('my')">我的</button>-->
+<!--    </div>-->
     <van-swipe
         style="height: calc(100vh - 64px)"
         vertical
@@ -32,21 +32,21 @@
             <span>{{ video.likeCount }}</span>
           </div>
           <div class="pl" @click="openPl(video.id)">
-            <van-icon class="chat" name="chat" size="30"/>
+            <van-icon class="chat" name="chat" size="30" style="margin-top: 10px"/>
           </div>
         </div>
       </van-swipe-item>
     </van-swipe>
-    <van-popup
-        v-model="showPopup"
-        closeable
-        close-icon="cross"
-        close-icon-position="top-left"
-        position="bottom"
-        class="login_popup"
-    >
-      <Login @login-success="onLoginSuccess"/>
-    </van-popup>
+      <van-popup
+              v-model="showPopup"
+              closeable
+              close-icon="cross"
+              close-icon-position="top-left"
+              position="bottom"
+              class="login_popup"
+      >
+          <CommentSection v-if="showPopup"/>
+      </van-popup>
   </div>
 </template>
 
@@ -58,6 +58,7 @@ import {Popup} from "vant";
 import Login from "@components/Login.vue";
 import Register from "@components/Register.vue";
 import router from '../router';
+import CommentSection from "@components/CommentSection.vue";
 
 export default {
   components: {
@@ -65,7 +66,8 @@ export default {
     videoPlayer,
     Login,
     // eslint-disable-next-line vue/no-unused-components
-    Register
+    Register,
+    CommentSection
   },
   name: "home",
   data() {
@@ -336,7 +338,9 @@ export default {
 }
 
 .login_popup{
-  height: 100%;
+    height: 70vh; /* 设置评论区高度为视口高度的70% */
+    overflow: hidden; /* 隐藏溢出部分 */
+    border-radius: 2px;
 }
 
 .foot {
